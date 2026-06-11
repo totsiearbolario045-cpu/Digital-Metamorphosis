@@ -1,0 +1,448 @@
+New Chat Project
+Ready
+cross-platform
+A curated cross-platform service catalog that showcases premium business services, cloud components, and AI agent environments for customer discovery and inquiry. The app highlights rare, high-value offerings with clear operational details, provider metadata, and streamlined request flows.
+
+Download JSON
+New Project
+Tech Stack
+React
+Vite
+React Native
+Expo
+TypeScript
+Supabase
+Tailwind CSS
+Expo Notifications
+Screens (7)
+1
+Catalog Home
+/
+Displays the featured catalog overview with highlighted services, cloud components, and AI agent environments.
+
+Hero Banner
+Featured Service Cards
+Category Grid
+Search Bar
+Quick Stats Panel
+2
+Category Explorer
+/categories
+Lets customers browse curated catalog items grouped into Business Services, Cloud Services, AI Agents, and Environments.
+
+Category Tabs
+Filter Chips
+Service Card List
+Sort Dropdown
+Results Header
+3
+Service Detail
+/services/:slug
+Shows detailed information for a selected service including description, provider, region, status, pricing, and contact options.
+
+Service Header
+Metadata Table
+Pricing Panel
+Status Badge
+Request Button
+4
+Cloud Components
+/cloud-components
+Presents technical service offerings such as api-gateway, auth-service, data-pipeline, and ml-inference with provider and region details.
+
+Component Cards
+Provider Filter
+Region Selector
+Status Indicators
+Search Input
+5
+AI Agent Environments
+/agents
+Displays grouped AI agent environments like Production, Research, and DevOps with summaries and agent counts.
+
+Environment Cards
+Agent Count Badges
+Environment Descriptions
+Status Summary
+Detail Links
+6
+Request Service
+/request
+Allows customers to submit an inquiry or service request for a selected catalog item.
+
+Request Form
+Service Selector
+Contact Fields
+Notes Textarea
+Submit Button
+7
+About Catalog
+/about
+Explains the purpose of the curated catalog and how customers can engage with the listed offerings.
+
+Intro Section
+Value Proposition Cards
+Process Timeline
+FAQ Accordion
+Contact CTA
+Features
+Curated catalog of business services, cloud services, AI agents, and environments
+Featured homepage with high-value service highlights and quick category access
+Category-based browsing for Business Services, Cloud Services, AI Agents, and Environments
+Search and filtering by service name, provider, region, and operational status
+Detailed service pages showing name, description, provider, region, status, and pricing
+Cloud component listing for api-gateway, auth-service, data-pipeline, and ml-inference
+AI environment views for Production, Research, and DevOps with agent counts and summaries
+Customer inquiry form for requesting more information or expressing interest in services
+Persistent backend storage for catalog items, categories, request submissions, and service metadata
+Responsive experience across web and mobile devices with shared cross-platform architecture
+Push notifications support for request acknowledgments and catalog updates on mobile clients
+Generated 5/19/2026, 7:32:22 PM
+
+
+
+
+{
+  "projectId": DIGITAL METAMORPHOSIS,
+  "appName": "New Chat Project",
+  "description": "A curated cross-platform service catalog that showcases premium business services, cloud components, and AI agent environments for customer discovery and inquiry. The app highlights rare, high-value offerings with clear operational details, provider metadata, and streamlined request flows.",
+  "platform": "cross-platform",
+  "screens": [
+    {
+      "name": "Catalog Home",
+      "route": "/",
+      "description": "Displays the featured catalog overview with highlighted services, cloud components, and AI agent environments.",
+      "components": [
+        "Hero Banner",
+        "Featured Service Cards",
+        "Category Grid",
+        "Search Bar",
+        "Quick Stats Panel"
+      ]
+    },
+    {
+      "name": "Category Explorer",
+      "route": "/categories",
+      "description": "Lets customers browse curated catalog items grouped into Business Services, Cloud Services, AI Agents, and Environments.",
+      "components": [
+        "Category Tabs",
+        "Filter Chips",
+        "Service Card List",
+        "Sort Dropdown",
+        "Results Header"
+      ]
+    },
+    {
+      "name": "Service Detail",
+      "route": "/services/:slug",
+      "description": "Shows detailed information for a selected service including description, provider, region, status, pricing, and contact options.",
+      "components": [
+        "Service Header",
+        "Metadata Table",
+        "Pricing Panel",
+        "Status Badge",
+        "Request Button"
+      ]
+    },
+    {
+      "name": "Cloud Components",
+      "route": "/cloud-components",
+      "description": "Presents technical service offerings such as api-gateway, auth-service, data-pipeline, and ml-inference with provider and region details.",
+      "components": [
+        "Component Cards",
+        "Provider Filter",
+        "Region Selector",
+        "Status Indicators",
+        "Search Input"
+      ]
+    },
+    {
+      "name": "AI Agent Environments",
+      "route": "/agents",
+      "description": "Displays grouped AI agent environments like Production, Research, and DevOps with summaries and agent counts.",
+      "components": [
+        "Environment Cards",
+        "Agent Count Badges",
+        "Environment Descriptions",
+        "Status Summary",
+        "Detail Links"
+      ]
+    },
+    {
+      "name": "Request Service",
+      "route": "/request",
+      "description": "Allows customers to submit an inquiry or service request for a selected catalog item.",
+      "components": [
+        "Request Form",
+        "Service Selector",
+        "Contact Fields",
+        "Notes Textarea",
+        "Submit Button"
+      ]
+    },
+    {
+      "name": "About Catalog",
+      "route": "/about",
+      "description": "Explains the purpose of the curated catalog and how customers can engage with the listed offerings.",
+      "components": [
+        "Intro Section",
+        "Value Proposition Cards",
+        "Process Timeline",
+        "FAQ Accordion",
+        "Contact CTA"
+      ]
+    }
+  ],
+  "techStack": [
+    "React",
+    "Vite",
+    "React Native",
+    "Expo",
+    "TypeScript",
+    "Supabase",
+    "Tailwind CSS",
+    "Expo Notifications"
+  ],
+  "features": [
+    "Curated catalog of business services, cloud services, AI agents, and environments",
+    "Featured homepage with high-value service highlights and quick category access",
+    "Category-based browsing for Business Services, Cloud Services, AI Agents, and Environments",
+    "Search and filtering by service name, provider, region, and operational status",
+    "Detailed service pages showing name, description, provider, region, status, and pricing",
+    "Cloud component listing for api-gateway, auth-service, data-pipeline, and ml-inference",
+    "AI environment views for Production, Research, and DevOps with agent counts and summaries",
+    "Customer inquiry form for requesting more information or expressing interest in services",
+    "Persistent backend storage for catalog items, categories, request submissions, and service metadata",
+    "Responsive experience across web and mobile devices with shared cross-platform architecture",
+    "Push notifications support for request acknowledgments and catalog updates on mobile clients"
+  ],
+  "generatedAt": "2026-05-19T11:32:22.318Z"
+}
+
+
+
+
+
+
+await presentArtifact({ artifactId: "artifacts/DIGITAL METAMORPHOSIS " });
+await suggestDeploy();
+
+// Resource Data
+resources = [
+    { location: "Bacolod", status: "ACTIVE", priority: "HIGH", region: "Negros Occidental", type: "CPU", quantity: 1200000 },
+    { location: "Marikina", status: "ACTIVE", priority: "CRITICAL", region: "Metro Manila", type: "GPU", quantity: 2000000 },
+    { location: "Mandaue", status: "ACTIVE", priority: "HIGH", region: "Cebu", type: "HYBRID", quantity: 800000 },
+    { location: "Davao-City", status: "ACTIVE", priority: "MEDIUM", region: "Davao", type: "CPU", quantity: 600000 },
+    { location: "Lipa", status: "ACTIVE", priority: "LOW", region: "Batangas", type: "GPU", quantity: 400000 },
+    { location: "Jaro", status: "ACTIVE", priority: "HIGH", region: "Iloilo", type: "CPU", quantity: 950000 },
+    { location: "Bayabas", status: "ACTIVE", priority: "MEDIUM", region: "Cagayan de Oro", type: "HYBRID", quantity: 500000 },
+    { location: "Cauayan", status: "ACTIVE", priority: "HIGH", region: "Negros Occidental", type: "HYBRID", quantity: 1300000 },
+    { location: "DIGITARB", status: "ACTIVE", priority: "HIGH", region: "Negros Occidental", type: "HYBRID", quantity: 9990000 }
+];
+
+// Environment Variables Configuration
+environmentVariables = {
+    NODE_ENV: "production",
+    PORT: 3001,
+    DATABASE_URL: "arbolario://imprastraktyur:imprastraktyur@imprastraktyura:5432/arbolario",
+    SESSION_SECRET: "lt_fcf40b8686fc7bcdee047b3614820cacd34b43ff35b22b42503826817e7fce7a"
+    // Additional environment settings
+};
+
+// Log message to indicate successful setup
+log("Infrastructure and Resources Successfully Configured");
+
+
+
+Function setupInfrastructureDashboard() {
+    // Step 1: Connect Enterprise Databases
+    MongoDB = connectToDatabase('MongoDB');
+    OpenTelemetry = initializeTelemetry('OpenTelemetry');
+    Docker = initializeContainerization('Docker');
+
+    // Step 2: Setup Cloud and Security Connectors
+    AWS = connectToCloud('AWS');
+    GoogleCloud = connectToCloud('Google Cloud');
+    Akamai = initializeCDN('Akamai');
+    Databricks = setupDataEngineeringPlatform('Databricks');
+
+    // Step 3: Setup Business Operations and Developer Workflow
+    GitHubActions = integrateCI_CD('GitHub Actions');
+    GitLab = integrateCI_CD('GitLab');
+    Bitbucket = integrateCI_CD('Bitbucket');
+    HubSpot = integrateCRM('HubSpot');
+    Zendesk = integrateCRM('Zendesk');
+    Salesforce = integrateCRM('Salesforce');
+    Intercom = integrateCRM('Intercom');
+
+    // Step 4: Finalize System Setup
+    system = createCompleteEngineGrid([
+        MongoDB,
+        OpenTelemetry,
+        Docker,
+        AWS,
+        GoogleCloud,
+        Akamai,
+        Databricks,
+        GitHubActions,
+        GitLab,
+        Bitbucket,
+        HubSpot,
+        Zendesk,
+        Salesforce,
+        Intercom,
+        Azure
+    ]);
+
+    return system;
+}
+
+
+
+INSERT INTO customers (
+    name, email, status, city, country, created_at
+)
+VALUES (
+    'Santini Arbolario',
+    'santiniarbolario' || substr(md5(random()::text), 1, 10) || '@soortos.com',
+    'active',
+    'Bacolod',
+    'PH',
+    now()
+)
+RETURNING id, name, email, status;
+
+
+SELECT id, name, email, city, status
+FROM customers
+WHERE name = 'Santini Arbolario'
+ORDER BY id DESC
+LIMIT 5;
+
+
+UPDATE orders
+SET status = 'paid'
+WHERE id = 2;
+
+SELECT id, status
+FROM orders
+WHERE id = 2;
+
+
+CREATE TABLE IF NOT EXISTS principle_engineer (
+    id BIGINT PRIMARY KEY,
+    note_text VARCHAR(200) NOT NULL,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+SELECT column_name, data_type
+FROM information_schema.columns
+WHERE table_name = 'principle_engineer'
+ORDER BY ordinal_position;
+
+CREATE INDEX IF NOT EXISTS idx_orders_customer_created
+ON orders(customer_id, created_at DESC);
+
+SELECT indexname, indexdef
+FROM pg_indexes
+WHERE tablename = 'orders'
+  AND indexname = 'idx_orders_customer_created';
+
+EXPLAIN
+SELECT *
+FROM orders
+WHERE customer_id = 1
+ORDER BY created_at DESC;
+
+CREATE OR REPLACE VIEW active_customers AS
+SELECT id, name, email, city, country
+FROM customers
+WHERE status = 'active';
+
+SELECT *
+FROM active_customers
+LIMIT 5;
+
+SELECT jsonb_build_object(
+           'customer', c.name,
+           'location', jsonb_build_object('city', c.city, 'country', c.country),
+           'paid_orders', COUNT(o.id)
+       ) AS customer_summary
+FROM customers c
+LEFT JOIN orders o ON o.customer_id = c.id AND o.status = 'paid'
+GROUP BY c.id, c.name, c.city, c.country
+ORDER BY c.id
+LIMIT 5;
+
+WITH paid_orders AS (
+    SELECT customer_id, total
+    FROM orders
+    WHERE status = 'paid'
+)
+SELECT c.name,
+       COUNT(paid_orders.customer_id) AS paid_order_count,
+       COALESCE(SUM(paid_orders.total), 0) AS paid_revenue
+FROM customers c
+LEFT JOIN paid_orders ON paid_orders.customer_id = c.id
+GROUP BY c.id, c.name
+ORDER BY paid_revenue DESC
+LIMIT 8;
+
+SELECT table_name, constraint_name, constraint_type
+FROM information_schema.table_constraints
+WHERE table_schema = 'public'
+  AND table_name IN ('products', 'order_items')
+ORDER BY table_name, constraint_type, constraint_name;
+
+UPDATE tutorial_notes
+SET note_text = 'Soortos JOINING principle_engineer'
+WHERE id = 1
+RETURNING id, note_text, created_at;
+
+POST /api/cmd  {"command":"DEPLOY_SECURITY"} → SECURITY_DEPLOYED ✅
+POST /api/cmd  {"command":"SCALE_ENGINE"}    → ENGINE_SCALED ✅  
+POST /api/cmd  {"command":"SCALE_COMMUNITICATION"} → COMMUNICATION_SCALED ✅
+GET  /api/healthz → {"status":"ok"} ✅
+
+
+3.9M	/mnt/skills/public
+1.1M	/mnt/skills/public/docx
+155K	/mnt/skills/public/docx.skill
+1.5K	/mnt/skills/public/docx/LICENSE.txt
+20K	/mnt/skills/public/docx/SKILL.md
+1.1M	/mnt/skills/public/docx/scripts
+16K	/mnt/skills/public/file-reading
+6.0K	/mnt/skills/public/file-reading.skill
+1.5K	/mnt/skills/public/file-reading/LICENSE.txt
+14K	/mnt/skills/public/file-reading/SKILL.md
+19K	/mnt/skills/public/frontend-design
+7.5K	/mnt/skills/public/frontend-design.skill
+10K	/mnt/skills/public/frontend-design/LICENSE.txt
+8.5K	/mnt/skills/public/frontend-design/SKILL.md
+60K	/mnt/skills/public/pdf
+18K	/mnt/skills/public/pdf-reading
+8.0K	/mnt/skills/public/pdf-reading.skill
+1.5K	/mnt/skills/public/pdf-reading/LICENSE.txt
+5.5K	/mnt/skills/public/pdf-reading/REFERENCE.md
+11K	/mnt/skills/public/pdf-reading/SKILL.md
+22K	/mnt/skills/public/pdf.skill
+12K	/mnt/skills/public/pdf/FORMS.md
+1.5K	/mnt/skills/public/pdf/LICENSE.txt
+17K	/mnt/skills/public/pdf/REFERENCE.md
+8.0K	/mnt/skills/public/pdf/SKILL.md
+22K	/mnt/skills/public/pdf/scripts
+1.2M	/mnt/skills/public/pptx
+162K	/mnt/skills/public/pptx.skill
+1.5K	/mnt/skills/public/pptx/LICENSE.txt
+12K	/mnt/skills/public/pptx/SKILL.md
+7.0K	/mnt/skills/public/pptx/editing.md
+16K	/mnt/skills/public/pptx/pptxgenjs.md
+1.1M	/mnt/skills/public/pptx/scripts
+3.0K	/mnt/skills/public/product-self-knowledge
+1.5K	/mnt/skills/public/product-self-knowledge.skill
+3.0K	/mnt/skills/public/product-self-knowledge/SKILL.md
+1.1M	/mnt/skills/public/xlsx
+148K	/mnt/skills/public/xlsx.skill
+1.5K	/mnt/skills/public/xlsx/LICENSE.txt
+12K	/mnt/skills/public/xlsx/SKILL.md
+1.1M	/mnt/skills/public/xlsx/scripts

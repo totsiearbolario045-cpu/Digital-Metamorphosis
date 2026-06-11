@@ -3,20 +3,34 @@ info:
   # Do not change the title, if the title changes, the import paths will be broken
   title: Api
   version: 0.1.0
-  description: API specification
+  description: DIGITAL METAMORPHOSIS service catalog API
 servers:
   - url: /api
     description: Base API path
 tags:
   - name: health
     description: Health operations
+  - name: services
+    description: Service catalog operations
+  - name: categories
+    description: Category operations
+  - name: cloud-components
+    description: Cloud component operations
+  - name: agents
+    description: AI agent environment operations
+  - name: requests
+    description: Service request operations
+  - name: stats
+    description: Catalog statistics
+  - name: resources
+    description: Infrastructure resource operations
+
 paths:
   /healthz:
     get:
       operationId: healthCheck
       tags: [health]
       summary: Health check
-      description: Returns server health status
       responses:
         "200":
           description: Healthy
@@ -24,6 +38,253 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+
+  /stats:
+    get:
+      operationId: getCatalogStats
+      tags: [stats]
+      summary: Get catalog statistics
+      responses:
+        "200":
+          description: Catalog stats
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CatalogStats"
+
+  /categories:
+    get:
+      operationId: listCategories
+      tags: [categories]
+      summary: List all categories
+      responses:
+        "200":
+          description: List of categories
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Category"
+
+  /services:
+    get:
+      operationId: listServices
+      tags: [services]
+      summary: List services with optional filtering
+      parameters:
+        - name: category
+          in: query
+          schema:
+            type: string
+        - name: search
+          in: query
+          schema:
+            type: string
+        - name: status
+          in: query
+          schema:
+            type: string
+        - name: region
+          in: query
+          schema:
+            type: string
+        - name: sort
+          in: query
+          schema:
+            type: string
+      responses:
+        "200":
+          description: List of services
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Service"
+
+  /services/featured:
+    get:
+      operationId: getFeaturedServices
+      tags: [services]
+      summary: Get featured/highlighted services for homepage
+      responses:
+        "200":
+          description: Featured services
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Service"
+
+  /services/{slug}:
+    get:
+      operationId: getServiceBySlug
+      tags: [services]
+      summary: Get service by slug
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Service detail
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Service"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /cloud-components:
+    get:
+      operationId: listCloudComponents
+      tags: [cloud-components]
+      summary: List cloud components with optional filters
+      parameters:
+        - name: provider
+          in: query
+          schema:
+            type: string
+        - name: region
+          in: query
+          schema:
+            type: string
+        - name: status
+          in: query
+          schema:
+            type: string
+        - name: search
+          in: query
+          schema:
+            type: string
+      responses:
+        "200":
+          description: List of cloud components
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/CloudComponent"
+
+  /agents:
+    get:
+      operationId: listAgentEnvironments
+      tags: [agents]
+      summary: List AI agent environments
+      responses:
+        "200":
+          description: List of agent environments
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/AgentEnvironment"
+
+  /agents/{id}:
+    get:
+      operationId: getAgentEnvironment
+      tags: [agents]
+      summary: Get agent environment detail
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Agent environment detail
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AgentEnvironment"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /requests:
+    post:
+      operationId: submitServiceRequest
+      tags: [requests]
+      summary: Submit a service inquiry/request
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ServiceRequestInput"
+      responses:
+        "201":
+          description: Request submitted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ServiceRequest"
+        "400":
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+    get:
+      operationId: listServiceRequests
+      tags: [requests]
+      summary: List all submitted service requests
+      responses:
+        "200":
+          description: List of requests
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ServiceRequest"
+
+  /resources:
+    get:
+      operationId: listResources
+      tags: [resources]
+      summary: List infrastructure resources
+      parameters:
+        - name: region
+          in: query
+          schema:
+            type: string
+        - name: type
+          in: query
+          schema:
+            type: string
+        - name: priority
+          in: query
+          schema:
+            type: string
+        - name: status
+          in: query
+          schema:
+            type: string
+      responses:
+        "200":
+          description: List of resources
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Resource"
+
 components:
   schemas:
     HealthStatus:
@@ -34,3 +295,276 @@ components:
       required:
         - status
 
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+        message:
+          type: string
+      required:
+        - error
+
+    CatalogStats:
+      type: object
+      properties:
+        totalServices:
+          type: integer
+        totalCategories:
+          type: integer
+        totalCloudComponents:
+          type: integer
+        totalAgentEnvironments:
+          type: integer
+        totalRequests:
+          type: integer
+        totalResources:
+          type: integer
+      required:
+        - totalServices
+        - totalCategories
+        - totalCloudComponents
+        - totalAgentEnvironments
+        - totalRequests
+        - totalResources
+
+    Category:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        slug:
+          type: string
+        description:
+          type: string
+        icon:
+          type: string
+        serviceCount:
+          type: integer
+      required:
+        - id
+        - name
+        - slug
+        - serviceCount
+
+    Service:
+      type: object
+      properties:
+        id:
+          type: string
+        slug:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        categoryId:
+          type: string
+        categoryName:
+          type: string
+        provider:
+          type: string
+        region:
+          type: string
+        status:
+          type: string
+          enum: [active, inactive, maintenance, deprecated]
+        pricing:
+          type: string
+        pricingDetails:
+          type: string
+        tags:
+          type: array
+          items:
+            type: string
+        featured:
+          type: boolean
+        isFeatured:
+          type: boolean
+        metadata:
+          type: object
+          additionalProperties: true
+        createdAt:
+          type: string
+          format: date-time
+      required:
+        - id
+        - slug
+        - name
+        - description
+        - provider
+        - region
+        - status
+        - featured
+
+    CloudComponent:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        slug:
+          type: string
+        description:
+          type: string
+        provider:
+          type: string
+        region:
+          type: string
+        status:
+          type: string
+          enum: [active, inactive, maintenance, deprecated]
+        version:
+          type: string
+        uptime:
+          type: string
+        latency:
+          type: string
+        tags:
+          type: array
+          items:
+            type: string
+      required:
+        - id
+        - name
+        - slug
+        - provider
+        - region
+        - status
+
+    AgentEnvironment:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        slug:
+          type: string
+        description:
+          type: string
+        type:
+          type: string
+          enum: [production, research, devops, staging]
+        status:
+          type: string
+          enum: [active, inactive, maintenance]
+        agentCount:
+          type: integer
+        activeAgents:
+          type: integer
+        agents:
+          type: array
+          items:
+            $ref: "#/components/schemas/Agent"
+      required:
+        - id
+        - name
+        - slug
+        - type
+        - status
+        - agentCount
+        - activeAgents
+
+    Agent:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        model:
+          type: string
+        status:
+          type: string
+        role:
+          type: string
+      required:
+        - id
+        - name
+        - status
+
+    ServiceRequestInput:
+      type: object
+      properties:
+        serviceId:
+          type: string
+        serviceName:
+          type: string
+        contactName:
+          type: string
+        contactEmail:
+          type: string
+        contactPhone:
+          type: string
+        organization:
+          type: string
+        notes:
+          type: string
+      required:
+        - serviceName
+        - contactName
+        - contactEmail
+
+    ServiceRequest:
+      type: object
+      properties:
+        id:
+          type: string
+        serviceId:
+          type: string
+        serviceName:
+          type: string
+        contactName:
+          type: string
+        contactEmail:
+          type: string
+        contactPhone:
+          type: string
+        organization:
+          type: string
+        notes:
+          type: string
+        status:
+          type: string
+          enum: [pending, in_review, approved, rejected]
+        createdAt:
+          type: string
+          format: date-time
+      required:
+        - id
+        - serviceName
+        - contactName
+        - contactEmail
+        - status
+        - createdAt
+
+    Resource:
+      type: object
+      properties:
+        id:
+          type: string
+        location:
+          type: string
+        status:
+          type: string
+        priority:
+          type: string
+        region:
+          type: string
+        type:
+          type: string
+          enum: [CPU, GPU, HYBRID]
+        quantity:
+          type: integer
+      required:
+        - id
+        - location
+        - status
+        - priority
+        - region
+        - type
+        - quantity
