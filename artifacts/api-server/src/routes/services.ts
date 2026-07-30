@@ -55,6 +55,7 @@ router.get("/services", async (req, res): Promise<void> => {
       or(
         eq(servicesTable.categoryName, category),
         eq(servicesTable.categoryId, category),
+        ilike(servicesTable.slug, `${category}-%`),
       )!,
     );
   }
