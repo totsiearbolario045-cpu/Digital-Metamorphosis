@@ -215,6 +215,150 @@ export const GetAgentEnvironmentResponse = zod.object({
 
 
 /**
+ * Returns worker, queue, and telemetry health without exposing credentials or payloads.
+ * @summary Get safe control-plane operational status
+ */
+export const GetControlPlaneStatusResponse = zod.object({
+  "status": zod.enum(['operational', 'degraded', 'offline']),
+  "workerCount": zod.number(),
+  "onlineWorkerCount": zod.number(),
+  "queuedJobs": zod.number(),
+  "runningJobs": zod.number(),
+  "completedJobs24h": zod.number(),
+  "failedJobs24h": zod.number(),
+  "telemetry24h": zod.number(),
+  "lastEventAt": zod.coerce.date().optional(),
+  "workers": zod.array(zod.object({
+  "id": zod.string(),
+  "workerId": zod.string(),
+  "name": zod.string(),
+  "version": zod.string().optional(),
+  "status": zod.enum(['online', 'offline', 'draining', 'degraded']),
+  "capabilities": zod.array(zod.string()),
+  "registeredAt": zod.coerce.date(),
+  "lastHeartbeatAt": zod.coerce.date().optional()
+}))
+})
+
+
+/**
+ * @summary Register an internal control-plane worker
+ */
+export const RegisterControlPlaneWorkerBody = zod.object({
+  "workerId": zod.string(),
+  "name": zod.string(),
+  "version": zod.string().optional(),
+  "capabilities": zod.array(zod.string()).optional(),
+  "metadata": zod.record(zod.string(), zod.unknown()).optional()
+})
+
+
+/**
+ * @summary Record a control-plane worker heartbeat
+ */
+export const HeartbeatControlPlaneWorkerParams = zod.object({
+  "workerId": zod.coerce.string()
+})
+
+export const HeartbeatControlPlaneWorkerBody = zod.object({
+  "status": zod.enum(['online', 'draining', 'degraded']).optional(),
+  "version": zod.string().optional(),
+  "metrics": zod.record(zod.string(), zod.unknown()).optional()
+})
+
+export const HeartbeatControlPlaneWorkerResponse = zod.object({
+  "id": zod.string(),
+  "workerId": zod.string(),
+  "name": zod.string(),
+  "version": zod.string().optional(),
+  "status": zod.enum(['online', 'offline', 'draining', 'degraded']),
+  "capabilities": zod.array(zod.string()),
+  "registeredAt": zod.coerce.date(),
+  "lastHeartbeatAt": zod.coerce.date().optional()
+})
+
+
+/**
+ * @summary Enqueue a durable internal job
+ */
+export const EnqueueControlPlaneJobBody = zod.object({
+  "type": zod.string(),
+  "priority": zod.number().optional(),
+  "payload": zod.record(zod.string(), zod.unknown()).optional(),
+  "maxAttempts": zod.number().optional()
+})
+
+
+/**
+ * @summary Claim the next queued internal job
+ */
+export const ClaimControlPlaneJobBody = zod.object({
+  "workerId": zod.string(),
+  "capabilities": zod.array(zod.string()).optional()
+})
+
+export const ClaimControlPlaneJobResponse = zod.object({
+  "id": zod.string(),
+  "type": zod.string(),
+  "status": zod.enum(['queued', 'running', 'completed', 'failed']),
+  "priority": zod.number(),
+  "payload": zod.record(zod.string(), zod.unknown()).optional(),
+  "result": zod.record(zod.string(), zod.unknown()).optional(),
+  "workerId": zod.string().optional(),
+  "attempts": zod.number(),
+  "maxAttempts": zod.number(),
+  "error": zod.string().optional(),
+  "createdAt": zod.coerce.date(),
+  "startedAt": zod.coerce.date().optional(),
+  "completedAt": zod.coerce.date().optional()
+}).nullable()
+
+
+/**
+ * @summary Complete or fail a claimed internal job
+ */
+export const CompleteControlPlaneJobParams = zod.object({
+  "id": zod.coerce.string()
+})
+
+export const CompleteControlPlaneJobBody = zod.object({
+  "workerId": zod.string(),
+  "status": zod.enum(['completed', 'failed']),
+  "result": zod.record(zod.string(), zod.unknown()).optional(),
+  "error": zod.string().optional()
+})
+
+export const CompleteControlPlaneJobResponse = zod.object({
+  "id": zod.string(),
+  "type": zod.string(),
+  "status": zod.enum(['queued', 'running', 'completed', 'failed']),
+  "priority": zod.number(),
+  "payload": zod.record(zod.string(), zod.unknown()).optional(),
+  "result": zod.record(zod.string(), zod.unknown()).optional(),
+  "workerId": zod.string().optional(),
+  "attempts": zod.number(),
+  "maxAttempts": zod.number(),
+  "error": zod.string().optional(),
+  "createdAt": zod.coerce.date(),
+  "startedAt": zod.coerce.date().optional(),
+  "completedAt": zod.coerce.date().optional()
+})
+
+
+/**
+ * @summary Ingest an internal control-plane telemetry event
+ */
+export const IngestControlPlaneTelemetryBody = zod.object({
+  "source": zod.string(),
+  "eventType": zod.string(),
+  "severity": zod.enum(['debug', 'info', 'warn', 'error']).optional(),
+  "message": zod.string(),
+  "workerId": zod.string().optional(),
+  "metrics": zod.record(zod.string(), zod.unknown()).optional()
+})
+
+
+/**
  * @summary Submit a service inquiry/request
  */
 export const SubmitServiceRequestBody = zod.object({

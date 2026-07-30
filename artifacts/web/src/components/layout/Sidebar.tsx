@@ -1,5 +1,5 @@
 import { Link, useLocation } from "wouter";
-import { Search, Grid, Cloud, Bot, HelpCircle, FileText } from "lucide-react";
+import { Search, Grid, Cloud, Bot, HelpCircle, FileText, Radio } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
 
@@ -11,6 +11,7 @@ export function Sidebar() {
     { href: "/categories", label: "Categories", icon: FileText },
     { href: "/cloud-components", label: "Cloud Components", icon: Cloud },
     { href: "/agents", label: "Agent Environments", icon: Bot },
+    { href: "/operations", label: "Operations Console", icon: Radio },
     { href: "/about", label: "About Catalog", icon: HelpCircle },
   ];
 

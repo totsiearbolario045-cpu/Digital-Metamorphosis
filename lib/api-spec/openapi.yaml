@@ -24,6 +24,8 @@ tags:
     description: Catalog statistics
   - name: resources
     description: Infrastructure resource operations
+  - name: control-plane
+    description: DIGITAL METAMORPHOSIS internal control-plane operations
 
 paths:
   /healthz:
@@ -229,6 +231,178 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorResponse"
 
+  /control-plane/status:
+    get:
+      operationId: getControlPlaneStatus
+      tags: [control-plane]
+      summary: Get safe control-plane operational status
+      description: Returns worker, queue, and telemetry health without exposing credentials or payloads.
+      responses:
+        "200":
+          description: Control-plane status
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ControlPlaneStatus"
+
+  /control-plane/workers/register:
+    post:
+      operationId: registerControlPlaneWorker
+      tags: [control-plane]
+      summary: Register an internal control-plane worker
+      security:
+        - ControlPlaneWorkerToken: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ControlPlaneWorkerInput"
+      responses:
+        "201":
+          description: Worker registered
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ControlPlaneWorker"
+        "401":
+          description: Worker authentication failed
+        "503":
+          description: Worker capability is not configured
+
+  /control-plane/workers/{workerId}/heartbeat:
+    post:
+      operationId: heartbeatControlPlaneWorker
+      tags: [control-plane]
+      summary: Record a control-plane worker heartbeat
+      security:
+        - ControlPlaneWorkerToken: []
+      parameters:
+        - name: workerId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ControlPlaneHeartbeatInput"
+      responses:
+        "200":
+          description: Heartbeat accepted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ControlPlaneWorker"
+        "401":
+          description: Worker authentication failed
+        "404":
+          description: Worker not found
+
+  /control-plane/jobs:
+    post:
+      operationId: enqueueControlPlaneJob
+      tags: [control-plane]
+      summary: Enqueue a durable internal job
+      security:
+        - ControlPlaneWorkerToken: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ControlPlaneJobInput"
+      responses:
+        "201":
+          description: Job queued
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ControlPlaneJob"
+        "401":
+          description: Worker authentication failed
+
+  /control-plane/jobs/claim:
+    post:
+      operationId: claimControlPlaneJob
+      tags: [control-plane]
+      summary: Claim the next queued internal job
+      security:
+        - ControlPlaneWorkerToken: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ControlPlaneJobClaimInput"
+      responses:
+        "200":
+          description: Claimed job or null when the queue is empty
+          content:
+            application/json:
+              schema:
+                nullable: true
+                allOf:
+                  - $ref: "#/components/schemas/ControlPlaneJob"
+        "401":
+          description: Worker authentication failed
+
+  /control-plane/jobs/{id}/complete:
+    post:
+      operationId: completeControlPlaneJob
+      tags: [control-plane]
+      summary: Complete or fail a claimed internal job
+      security:
+        - ControlPlaneWorkerToken: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ControlPlaneJobCompletionInput"
+      responses:
+        "200":
+          description: Job updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ControlPlaneJob"
+        "401":
+          description: Worker authentication failed
+        "404":
+          description: Job not found
+
+  /control-plane/telemetry:
+    post:
+      operationId: ingestControlPlaneTelemetry
+      tags: [control-plane]
+      summary: Ingest an internal control-plane telemetry event
+      security:
+        - ControlPlaneWorkerToken: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ControlPlaneTelemetryInput"
+      responses:
+        "201":
+          description: Telemetry accepted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ControlPlaneTelemetry"
+        "401":
+          description: Worker authentication failed
+
   /requests:
     post:
       operationId: submitServiceRequest
@@ -300,6 +474,11 @@ paths:
                   $ref: "#/components/schemas/Resource"
 
 components:
+  securitySchemes:
+    ControlPlaneWorkerToken:
+      type: apiKey
+      in: header
+      name: X-Digital-Metamorphosis-Worker-Token
   schemas:
     HealthStatus:
       type: object
@@ -525,6 +704,244 @@ components:
       required:
         - id
         - configured
+
+    ControlPlaneWorker:
+      type: object
+      properties:
+        id:
+          type: string
+        workerId:
+          type: string
+        name:
+          type: string
+        version:
+          type: string
+        status:
+          type: string
+          enum: [online, offline, draining, degraded]
+        capabilities:
+          type: array
+          items:
+            type: string
+        registeredAt:
+          type: string
+          format: date-time
+        lastHeartbeatAt:
+          type: string
+          format: date-time
+      required:
+        - id
+        - workerId
+        - name
+        - status
+        - capabilities
+        - registeredAt
+
+    ControlPlaneWorkerInput:
+      type: object
+      properties:
+        workerId:
+          type: string
+        name:
+          type: string
+        version:
+          type: string
+        capabilities:
+          type: array
+          items:
+            type: string
+        metadata:
+          type: object
+          additionalProperties: true
+      required:
+        - workerId
+        - name
+
+    ControlPlaneHeartbeatInput:
+      type: object
+      properties:
+        status:
+          type: string
+          enum: [online, draining, degraded]
+        version:
+          type: string
+        metrics:
+          type: object
+          additionalProperties: true
+
+    ControlPlaneJob:
+      type: object
+      properties:
+        id:
+          type: string
+        type:
+          type: string
+        status:
+          type: string
+          enum: [queued, running, completed, failed]
+        priority:
+          type: integer
+        payload:
+          type: object
+          additionalProperties: true
+        result:
+          type: object
+          additionalProperties: true
+        workerId:
+          type: string
+        attempts:
+          type: integer
+        maxAttempts:
+          type: integer
+        error:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        startedAt:
+          type: string
+          format: date-time
+        completedAt:
+          type: string
+          format: date-time
+      required:
+        - id
+        - type
+        - status
+        - priority
+        - attempts
+        - maxAttempts
+        - createdAt
+
+    ControlPlaneJobInput:
+      type: object
+      properties:
+        type:
+          type: string
+        priority:
+          type: integer
+        payload:
+          type: object
+          additionalProperties: true
+        maxAttempts:
+          type: integer
+      required:
+        - type
+
+    ControlPlaneJobClaimInput:
+      type: object
+      properties:
+        workerId:
+          type: string
+        capabilities:
+          type: array
+          items:
+            type: string
+      required:
+        - workerId
+
+    ControlPlaneJobCompletionInput:
+      type: object
+      properties:
+        workerId:
+          type: string
+        status:
+          type: string
+          enum: [completed, failed]
+        result:
+          type: object
+          additionalProperties: true
+        error:
+          type: string
+      required:
+        - workerId
+        - status
+
+    ControlPlaneTelemetryInput:
+      type: object
+      properties:
+        source:
+          type: string
+        eventType:
+          type: string
+        severity:
+          type: string
+          enum: [debug, info, warn, error]
+        message:
+          type: string
+        workerId:
+          type: string
+        metrics:
+          type: object
+          additionalProperties: true
+      required:
+        - source
+        - eventType
+        - message
+
+    ControlPlaneTelemetry:
+      type: object
+      properties:
+        id:
+          type: string
+        source:
+          type: string
+        eventType:
+          type: string
+        severity:
+          type: string
+        message:
+          type: string
+        workerId:
+          type: string
+        recordedAt:
+          type: string
+          format: date-time
+      required:
+        - id
+        - source
+        - eventType
+        - severity
+        - message
+        - recordedAt
+
+    ControlPlaneStatus:
+      type: object
+      properties:
+        status:
+          type: string
+          enum: [operational, degraded, offline]
+        workerCount:
+          type: integer
+        onlineWorkerCount:
+          type: integer
+        queuedJobs:
+          type: integer
+        runningJobs:
+          type: integer
+        completedJobs24h:
+          type: integer
+        failedJobs24h:
+          type: integer
+        telemetry24h:
+          type: integer
+        lastEventAt:
+          type: string
+          format: date-time
+        workers:
+          type: array
+          items:
+            $ref: "#/components/schemas/ControlPlaneWorker"
+      required:
+        - status
+        - workerCount
+        - onlineWorkerCount
+        - queuedJobs
+        - runningJobs
+        - completedJobs24h
+        - failedJobs24h
+        - telemetry24h
+        - workers
 
     ServiceRequestInput:
       type: object

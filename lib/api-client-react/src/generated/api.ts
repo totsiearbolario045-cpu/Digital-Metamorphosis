@@ -25,6 +25,16 @@ import type {
   CatalogStats,
   Category,
   CloudComponent,
+  ControlPlaneHeartbeatInput,
+  ControlPlaneJob,
+  ControlPlaneJobClaimInput,
+  ControlPlaneJobCompletionInput,
+  ControlPlaneJobInput,
+  ControlPlaneStatus,
+  ControlPlaneTelemetry,
+  ControlPlaneTelemetryInput,
+  ControlPlaneWorker,
+  ControlPlaneWorkerInput,
   ErrorResponse,
   HealthStatus,
   ListCloudComponentsParams,
@@ -832,6 +842,512 @@ export function useGetAgentEnvironment<TData = Awaited<ReturnType<typeof getAgen
 
 
 
+
+export const getGetControlPlaneStatusUrl = () => {
+
+
+
+
+  return `/api/control-plane/status`
+}
+
+/**
+ * Returns worker, queue, and telemetry health without exposing credentials or payloads.
+ * @summary Get safe control-plane operational status
+ */
+export const getControlPlaneStatus = async ( options?: RequestInit): Promise<ControlPlaneStatus> => {
+
+  return customFetch<ControlPlaneStatus>(getGetControlPlaneStatusUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getGetControlPlaneStatusQueryKey = () => {
+    return [
+    `/api/control-plane/status`
+    ] as const;
+    }
+
+
+export const getGetControlPlaneStatusQueryOptions = <TData = Awaited<ReturnType<typeof getControlPlaneStatus>>, TError = ErrorType<unknown>>( options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getControlPlaneStatus>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetControlPlaneStatusQueryKey();
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getControlPlaneStatus>>> = ({ signal }) => getControlPlaneStatus({ signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getControlPlaneStatus>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type GetControlPlaneStatusQueryResult = NonNullable<Awaited<ReturnType<typeof getControlPlaneStatus>>>
+export type GetControlPlaneStatusQueryError = ErrorType<unknown>
+
+
+/**
+ * @summary Get safe control-plane operational status
+ */
+
+export function useGetControlPlaneStatus<TData = Awaited<ReturnType<typeof getControlPlaneStatus>>, TError = ErrorType<unknown>>(
+  options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getControlPlaneStatus>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getGetControlPlaneStatusQueryOptions(options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+
+
+
+
+
+
+export const getRegisterControlPlaneWorkerUrl = () => {
+
+
+
+
+  return `/api/control-plane/workers/register`
+}
+
+/**
+ * @summary Register an internal control-plane worker
+ */
+export const registerControlPlaneWorker = async (controlPlaneWorkerInput: ControlPlaneWorkerInput, options?: RequestInit): Promise<ControlPlaneWorker> => {
+
+  return customFetch<ControlPlaneWorker>(getRegisterControlPlaneWorkerUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      controlPlaneWorkerInput,)
+  }
+);}
+
+
+
+
+export const getRegisterControlPlaneWorkerMutationOptions = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof registerControlPlaneWorker>>, TError,{data: BodyType<ControlPlaneWorkerInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof registerControlPlaneWorker>>, TError,{data: BodyType<ControlPlaneWorkerInput>}, TContext> => {
+
+const mutationKey = ['registerControlPlaneWorker'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof registerControlPlaneWorker>>, {data: BodyType<ControlPlaneWorkerInput>}> = (props) => {
+          const {data} = props ?? {};
+
+          return  registerControlPlaneWorker(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type RegisterControlPlaneWorkerMutationResult = NonNullable<Awaited<ReturnType<typeof registerControlPlaneWorker>>>
+    export type RegisterControlPlaneWorkerMutationBody = BodyType<ControlPlaneWorkerInput>
+    export type RegisterControlPlaneWorkerMutationError = ErrorType<void>
+
+    /**
+ * @summary Register an internal control-plane worker
+ */
+export const useRegisterControlPlaneWorker = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof registerControlPlaneWorker>>, TError,{data: BodyType<ControlPlaneWorkerInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof registerControlPlaneWorker>>,
+        TError,
+        {data: BodyType<ControlPlaneWorkerInput>},
+        TContext
+      > => {
+      return useMutation(getRegisterControlPlaneWorkerMutationOptions(options));
+    }
+
+export const getHeartbeatControlPlaneWorkerUrl = (workerId: string,) => {
+
+
+
+
+  return `/api/control-plane/workers/${workerId}/heartbeat`
+}
+
+/**
+ * @summary Record a control-plane worker heartbeat
+ */
+export const heartbeatControlPlaneWorker = async (workerId: string,
+    controlPlaneHeartbeatInput: ControlPlaneHeartbeatInput, options?: RequestInit): Promise<ControlPlaneWorker> => {
+
+  return customFetch<ControlPlaneWorker>(getHeartbeatControlPlaneWorkerUrl(workerId),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      controlPlaneHeartbeatInput,)
+  }
+);}
+
+
+
+
+export const getHeartbeatControlPlaneWorkerMutationOptions = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof heartbeatControlPlaneWorker>>, TError,{workerId: string;data: BodyType<ControlPlaneHeartbeatInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof heartbeatControlPlaneWorker>>, TError,{workerId: string;data: BodyType<ControlPlaneHeartbeatInput>}, TContext> => {
+
+const mutationKey = ['heartbeatControlPlaneWorker'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof heartbeatControlPlaneWorker>>, {workerId: string;data: BodyType<ControlPlaneHeartbeatInput>}> = (props) => {
+          const {workerId,data} = props ?? {};
+
+          return  heartbeatControlPlaneWorker(workerId,data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type HeartbeatControlPlaneWorkerMutationResult = NonNullable<Awaited<ReturnType<typeof heartbeatControlPlaneWorker>>>
+    export type HeartbeatControlPlaneWorkerMutationBody = BodyType<ControlPlaneHeartbeatInput>
+    export type HeartbeatControlPlaneWorkerMutationError = ErrorType<void>
+
+    /**
+ * @summary Record a control-plane worker heartbeat
+ */
+export const useHeartbeatControlPlaneWorker = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof heartbeatControlPlaneWorker>>, TError,{workerId: string;data: BodyType<ControlPlaneHeartbeatInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof heartbeatControlPlaneWorker>>,
+        TError,
+        {workerId: string;data: BodyType<ControlPlaneHeartbeatInput>},
+        TContext
+      > => {
+      return useMutation(getHeartbeatControlPlaneWorkerMutationOptions(options));
+    }
+
+export const getEnqueueControlPlaneJobUrl = () => {
+
+
+
+
+  return `/api/control-plane/jobs`
+}
+
+/**
+ * @summary Enqueue a durable internal job
+ */
+export const enqueueControlPlaneJob = async (controlPlaneJobInput: ControlPlaneJobInput, options?: RequestInit): Promise<ControlPlaneJob> => {
+
+  return customFetch<ControlPlaneJob>(getEnqueueControlPlaneJobUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      controlPlaneJobInput,)
+  }
+);}
+
+
+
+
+export const getEnqueueControlPlaneJobMutationOptions = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof enqueueControlPlaneJob>>, TError,{data: BodyType<ControlPlaneJobInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof enqueueControlPlaneJob>>, TError,{data: BodyType<ControlPlaneJobInput>}, TContext> => {
+
+const mutationKey = ['enqueueControlPlaneJob'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof enqueueControlPlaneJob>>, {data: BodyType<ControlPlaneJobInput>}> = (props) => {
+          const {data} = props ?? {};
+
+          return  enqueueControlPlaneJob(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type EnqueueControlPlaneJobMutationResult = NonNullable<Awaited<ReturnType<typeof enqueueControlPlaneJob>>>
+    export type EnqueueControlPlaneJobMutationBody = BodyType<ControlPlaneJobInput>
+    export type EnqueueControlPlaneJobMutationError = ErrorType<void>
+
+    /**
+ * @summary Enqueue a durable internal job
+ */
+export const useEnqueueControlPlaneJob = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof enqueueControlPlaneJob>>, TError,{data: BodyType<ControlPlaneJobInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof enqueueControlPlaneJob>>,
+        TError,
+        {data: BodyType<ControlPlaneJobInput>},
+        TContext
+      > => {
+      return useMutation(getEnqueueControlPlaneJobMutationOptions(options));
+    }
+
+export const getClaimControlPlaneJobUrl = () => {
+
+
+
+
+  return `/api/control-plane/jobs/claim`
+}
+
+/**
+ * @summary Claim the next queued internal job
+ */
+export const claimControlPlaneJob = async (controlPlaneJobClaimInput: ControlPlaneJobClaimInput, options?: RequestInit): Promise<ControlPlaneJob | null> => {
+
+  return customFetch<ControlPlaneJob | null>(getClaimControlPlaneJobUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      controlPlaneJobClaimInput,)
+  }
+);}
+
+
+
+
+export const getClaimControlPlaneJobMutationOptions = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof claimControlPlaneJob>>, TError,{data: BodyType<ControlPlaneJobClaimInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof claimControlPlaneJob>>, TError,{data: BodyType<ControlPlaneJobClaimInput>}, TContext> => {
+
+const mutationKey = ['claimControlPlaneJob'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof claimControlPlaneJob>>, {data: BodyType<ControlPlaneJobClaimInput>}> = (props) => {
+          const {data} = props ?? {};
+
+          return  claimControlPlaneJob(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type ClaimControlPlaneJobMutationResult = NonNullable<Awaited<ReturnType<typeof claimControlPlaneJob>>>
+    export type ClaimControlPlaneJobMutationBody = BodyType<ControlPlaneJobClaimInput>
+    export type ClaimControlPlaneJobMutationError = ErrorType<void>
+
+    /**
+ * @summary Claim the next queued internal job
+ */
+export const useClaimControlPlaneJob = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof claimControlPlaneJob>>, TError,{data: BodyType<ControlPlaneJobClaimInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof claimControlPlaneJob>>,
+        TError,
+        {data: BodyType<ControlPlaneJobClaimInput>},
+        TContext
+      > => {
+      return useMutation(getClaimControlPlaneJobMutationOptions(options));
+    }
+
+export const getCompleteControlPlaneJobUrl = (id: string,) => {
+
+
+
+
+  return `/api/control-plane/jobs/${id}/complete`
+}
+
+/**
+ * @summary Complete or fail a claimed internal job
+ */
+export const completeControlPlaneJob = async (id: string,
+    controlPlaneJobCompletionInput: ControlPlaneJobCompletionInput, options?: RequestInit): Promise<ControlPlaneJob> => {
+
+  return customFetch<ControlPlaneJob>(getCompleteControlPlaneJobUrl(id),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      controlPlaneJobCompletionInput,)
+  }
+);}
+
+
+
+
+export const getCompleteControlPlaneJobMutationOptions = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof completeControlPlaneJob>>, TError,{id: string;data: BodyType<ControlPlaneJobCompletionInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof completeControlPlaneJob>>, TError,{id: string;data: BodyType<ControlPlaneJobCompletionInput>}, TContext> => {
+
+const mutationKey = ['completeControlPlaneJob'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof completeControlPlaneJob>>, {id: string;data: BodyType<ControlPlaneJobCompletionInput>}> = (props) => {
+          const {id,data} = props ?? {};
+
+          return  completeControlPlaneJob(id,data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type CompleteControlPlaneJobMutationResult = NonNullable<Awaited<ReturnType<typeof completeControlPlaneJob>>>
+    export type CompleteControlPlaneJobMutationBody = BodyType<ControlPlaneJobCompletionInput>
+    export type CompleteControlPlaneJobMutationError = ErrorType<void>
+
+    /**
+ * @summary Complete or fail a claimed internal job
+ */
+export const useCompleteControlPlaneJob = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof completeControlPlaneJob>>, TError,{id: string;data: BodyType<ControlPlaneJobCompletionInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof completeControlPlaneJob>>,
+        TError,
+        {id: string;data: BodyType<ControlPlaneJobCompletionInput>},
+        TContext
+      > => {
+      return useMutation(getCompleteControlPlaneJobMutationOptions(options));
+    }
+
+export const getIngestControlPlaneTelemetryUrl = () => {
+
+
+
+
+  return `/api/control-plane/telemetry`
+}
+
+/**
+ * @summary Ingest an internal control-plane telemetry event
+ */
+export const ingestControlPlaneTelemetry = async (controlPlaneTelemetryInput: ControlPlaneTelemetryInput, options?: RequestInit): Promise<ControlPlaneTelemetry> => {
+
+  return customFetch<ControlPlaneTelemetry>(getIngestControlPlaneTelemetryUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      controlPlaneTelemetryInput,)
+  }
+);}
+
+
+
+
+export const getIngestControlPlaneTelemetryMutationOptions = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof ingestControlPlaneTelemetry>>, TError,{data: BodyType<ControlPlaneTelemetryInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof ingestControlPlaneTelemetry>>, TError,{data: BodyType<ControlPlaneTelemetryInput>}, TContext> => {
+
+const mutationKey = ['ingestControlPlaneTelemetry'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof ingestControlPlaneTelemetry>>, {data: BodyType<ControlPlaneTelemetryInput>}> = (props) => {
+          const {data} = props ?? {};
+
+          return  ingestControlPlaneTelemetry(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type IngestControlPlaneTelemetryMutationResult = NonNullable<Awaited<ReturnType<typeof ingestControlPlaneTelemetry>>>
+    export type IngestControlPlaneTelemetryMutationBody = BodyType<ControlPlaneTelemetryInput>
+    export type IngestControlPlaneTelemetryMutationError = ErrorType<void>
+
+    /**
+ * @summary Ingest an internal control-plane telemetry event
+ */
+export const useIngestControlPlaneTelemetry = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof ingestControlPlaneTelemetry>>, TError,{data: BodyType<ControlPlaneTelemetryInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof ingestControlPlaneTelemetry>>,
+        TError,
+        {data: BodyType<ControlPlaneTelemetryInput>},
+        TContext
+      > => {
+      return useMutation(getIngestControlPlaneTelemetryMutationOptions(options));
+    }
 
 export const getSubmitServiceRequestUrl = () => {
 

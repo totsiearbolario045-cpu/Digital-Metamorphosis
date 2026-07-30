@@ -11,6 +11,7 @@ const AGENT_SECRET_KEYS = {
   pythonBackendInversed: "python_backend_inversed",
   lambdaTelemetry: "LAMBDA_TELEMETRY",
   devopsCompliance: "devops_compliance",
+  controlPlaneWorkers: "digital_metamorphosis_workers",
 } as const;
 
 export type AgentSecretName = keyof typeof AGENT_SECRET_KEYS;
@@ -56,6 +57,10 @@ export function getAgentRuntimeStatus() {
     {
       id: "compliance",
       configured: Boolean(getAgentSecret("devopsCompliance")),
+    },
+    {
+      id: "control-plane-workers",
+      configured: Boolean(getAgentSecret("controlPlaneWorkers")),
     },
   ];
 

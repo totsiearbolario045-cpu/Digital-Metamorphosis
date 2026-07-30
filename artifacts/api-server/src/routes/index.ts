@@ -7,6 +7,7 @@ import cloudComponentsRouter from "./cloud-components";
 import agentsRouter from "./agents";
 import requestsRouter from "./requests";
 import resourcesRouter from "./resources";
+import controlPlaneRouter from "./control-plane";
 
 const router: IRouter = Router();
 
@@ -18,5 +19,6 @@ router.use(cloudComponentsRouter);
 router.use(agentsRouter);
 router.use(requestsRouter);
 router.use(resourcesRouter);
+router.use(controlPlaneRouter);
 
 export default router;

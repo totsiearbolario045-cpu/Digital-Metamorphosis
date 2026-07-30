@@ -1,2 +1,3 @@
 - [Agent secret boundary](agent-secret-boundary.md) — agent integrations use an explicit secret allowlist; public readiness checks never expose values.
 - [Category filtering](category-filtering.md) — catalog services accept category names, IDs, and slugs so web and mobile navigation stay compatible.
+- [Provider-independent control plane](control-plane-ownership.md) — DIGITAL METAMORPHOSIS owns internal execution; external hyperscalers are optional coordinated resources.

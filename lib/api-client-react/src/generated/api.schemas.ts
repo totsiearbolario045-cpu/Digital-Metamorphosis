@@ -144,6 +144,168 @@ export interface AgentRuntimeStatus {
   capabilities: AgentCapability[];
 }
 
+export type ControlPlaneWorkerStatus = typeof ControlPlaneWorkerStatus[keyof typeof ControlPlaneWorkerStatus];
+
+
+export const ControlPlaneWorkerStatus = {
+  online: 'online',
+  offline: 'offline',
+  draining: 'draining',
+  degraded: 'degraded',
+} as const;
+
+export interface ControlPlaneWorker {
+  id: string;
+  workerId: string;
+  name: string;
+  version?: string;
+  status: ControlPlaneWorkerStatus;
+  capabilities: string[];
+  registeredAt: string;
+  lastHeartbeatAt?: string;
+}
+
+export type ControlPlaneWorkerInputMetadata = { [key: string]: unknown };
+
+export interface ControlPlaneWorkerInput {
+  workerId: string;
+  name: string;
+  version?: string;
+  capabilities?: string[];
+  metadata?: ControlPlaneWorkerInputMetadata;
+}
+
+export type ControlPlaneHeartbeatInputStatus = typeof ControlPlaneHeartbeatInputStatus[keyof typeof ControlPlaneHeartbeatInputStatus];
+
+
+export const ControlPlaneHeartbeatInputStatus = {
+  online: 'online',
+  draining: 'draining',
+  degraded: 'degraded',
+} as const;
+
+export type ControlPlaneHeartbeatInputMetrics = { [key: string]: unknown };
+
+export interface ControlPlaneHeartbeatInput {
+  status?: ControlPlaneHeartbeatInputStatus;
+  version?: string;
+  metrics?: ControlPlaneHeartbeatInputMetrics;
+}
+
+export type ControlPlaneJobStatus = typeof ControlPlaneJobStatus[keyof typeof ControlPlaneJobStatus];
+
+
+export const ControlPlaneJobStatus = {
+  queued: 'queued',
+  running: 'running',
+  completed: 'completed',
+  failed: 'failed',
+} as const;
+
+export type ControlPlaneJobPayload = { [key: string]: unknown };
+
+export type ControlPlaneJobResult = { [key: string]: unknown };
+
+export interface ControlPlaneJob {
+  id: string;
+  type: string;
+  status: ControlPlaneJobStatus;
+  priority: number;
+  payload?: ControlPlaneJobPayload;
+  result?: ControlPlaneJobResult;
+  workerId?: string;
+  attempts: number;
+  maxAttempts: number;
+  error?: string;
+  createdAt: string;
+  startedAt?: string;
+  completedAt?: string;
+}
+
+export type ControlPlaneJobInputPayload = { [key: string]: unknown };
+
+export interface ControlPlaneJobInput {
+  type: string;
+  priority?: number;
+  payload?: ControlPlaneJobInputPayload;
+  maxAttempts?: number;
+}
+
+export interface ControlPlaneJobClaimInput {
+  workerId: string;
+  capabilities?: string[];
+}
+
+export type ControlPlaneJobCompletionInputStatus = typeof ControlPlaneJobCompletionInputStatus[keyof typeof ControlPlaneJobCompletionInputStatus];
+
+
+export const ControlPlaneJobCompletionInputStatus = {
+  completed: 'completed',
+  failed: 'failed',
+} as const;
+
+export type ControlPlaneJobCompletionInputResult = { [key: string]: unknown };
+
+export interface ControlPlaneJobCompletionInput {
+  workerId: string;
+  status: ControlPlaneJobCompletionInputStatus;
+  result?: ControlPlaneJobCompletionInputResult;
+  error?: string;
+}
+
+export type ControlPlaneTelemetryInputSeverity = typeof ControlPlaneTelemetryInputSeverity[keyof typeof ControlPlaneTelemetryInputSeverity];
+
+
+export const ControlPlaneTelemetryInputSeverity = {
+  debug: 'debug',
+  info: 'info',
+  warn: 'warn',
+  error: 'error',
+} as const;
+
+export type ControlPlaneTelemetryInputMetrics = { [key: string]: unknown };
+
+export interface ControlPlaneTelemetryInput {
+  source: string;
+  eventType: string;
+  severity?: ControlPlaneTelemetryInputSeverity;
+  message: string;
+  workerId?: string;
+  metrics?: ControlPlaneTelemetryInputMetrics;
+}
+
+export interface ControlPlaneTelemetry {
+  id: string;
+  source: string;
+  eventType: string;
+  severity: string;
+  message: string;
+  workerId?: string;
+  recordedAt: string;
+}
+
+export type ControlPlaneStatusStatus = typeof ControlPlaneStatusStatus[keyof typeof ControlPlaneStatusStatus];
+
+
+export const ControlPlaneStatusStatus = {
+  operational: 'operational',
+  degraded: 'degraded',
+  offline: 'offline',
+} as const;
+
+export interface ControlPlaneStatus {
+  status: ControlPlaneStatusStatus;
+  workerCount: number;
+  onlineWorkerCount: number;
+  queuedJobs: number;
+  runningJobs: number;
+  completedJobs24h: number;
+  failedJobs24h: number;
+  telemetry24h: number;
+  lastEventAt?: string;
+  workers: ControlPlaneWorker[];
+}
+
 export interface ServiceRequestInput {
   serviceId?: string;
   serviceName: string;

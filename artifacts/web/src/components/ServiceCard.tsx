@@ -1,5 +1,5 @@
 import { Link } from "wouter";
-import { Service } from "@workspace/api-client-react/src/generated/api.schemas";
+import type { Service } from "@workspace/api-client-react";
 import { StatusBadge } from "./StatusBadge";
 import { ChevronRight } from "lucide-react";
 import { motion } from "framer-motion";

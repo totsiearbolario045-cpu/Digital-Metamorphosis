@@ -12,6 +12,7 @@ import CloudComponents from "@/pages/CloudComponents";
 import Agents from "@/pages/Agents";
 import Request from "@/pages/Request";
 import About from "@/pages/About";
+import Operations from "@/pages/Operations";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -31,6 +32,7 @@ function Router() {
         <Route path="/services/:slug" component={ServiceDetail} />
         <Route path="/cloud-components" component={CloudComponents} />
         <Route path="/agents" component={Agents} />
+        <Route path="/operations" component={Operations} />
         <Route path="/request" component={Request} />
         <Route path="/about" component={About} />
         <Route component={NotFound} />
