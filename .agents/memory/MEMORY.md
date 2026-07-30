@@ -1,1 +1,2 @@
 - [Agent secret boundary](agent-secret-boundary.md) — agent integrations use an explicit secret allowlist; public readiness checks never expose values.
+- [Category filtering](category-filtering.md) — catalog services accept category names and IDs so web and mobile navigation stay compatible.

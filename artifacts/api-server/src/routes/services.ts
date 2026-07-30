@@ -7,7 +7,7 @@ import {
   GetServiceBySlugParams,
   GetServiceBySlugResponse,
 } from "@workspace/api-zod";
-import { eq, ilike, and, type SQL } from "drizzle-orm";
+import { eq, ilike, and, or, type SQL } from "drizzle-orm";
 
 const router: IRouter = Router();
 
@@ -50,7 +50,14 @@ router.get("/services", async (req, res): Promise<void> => {
   const { category, search, status, region } = parsed.data;
   const conditions: SQL[] = [];
 
-  if (category) conditions.push(eq(servicesTable.categoryName, category));
+  if (category) {
+    conditions.push(
+      or(
+        eq(servicesTable.categoryName, category),
+        eq(servicesTable.categoryId, category),
+      )!,
+    );
+  }
   if (status) conditions.push(eq(servicesTable.status, status));
   if (region) conditions.push(eq(servicesTable.region, region));
   if (search) conditions.push(ilike(servicesTable.name, `%${search}%`));
