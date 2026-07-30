@@ -17,7 +17,7 @@ tags:
   - name: cloud-components
     description: Cloud component operations
   - name: agents
-    description: AI agent environment operations
+    description: AI agent environment and runtime operations
   - name: requests
     description: Service request operations
   - name: stats
@@ -189,6 +189,20 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/AgentEnvironment"
+
+  /agents/runtime:
+    get:
+      operationId: getAgentRuntimeStatus
+      tags: [agents]
+      summary: Get safe agent runtime readiness
+      description: Returns capability readiness only. Secret values are never exposed.
+      responses:
+        "200":
+          description: Agent runtime readiness
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AgentRuntimeStatus"
 
   /agents/{id}:
     get:
@@ -486,6 +500,31 @@ components:
         - id
         - name
         - status
+
+    AgentRuntimeStatus:
+      type: object
+      properties:
+        status:
+          type: string
+          enum: [ready, degraded]
+        capabilities:
+          type: array
+          items:
+            $ref: "#/components/schemas/AgentCapability"
+      required:
+        - status
+        - capabilities
+
+    AgentCapability:
+      type: object
+      properties:
+        id:
+          type: string
+        configured:
+          type: boolean
+      required:
+        - id
+        - configured
 
     ServiceRequestInput:
       type: object

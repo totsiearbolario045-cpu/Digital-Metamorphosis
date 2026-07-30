@@ -176,6 +176,19 @@ export const ListAgentEnvironmentsResponse = zod.array(ListAgentEnvironmentsResp
 
 
 /**
+ * Returns capability readiness only. Secret values are never exposed.
+ * @summary Get safe agent runtime readiness
+ */
+export const GetAgentRuntimeStatusResponse = zod.object({
+  "status": zod.enum(['ready', 'degraded']),
+  "capabilities": zod.array(zod.object({
+  "id": zod.string(),
+  "configured": zod.boolean()
+}))
+})
+
+
+/**
  * @summary Get agent environment detail
  */
 export const GetAgentEnvironmentParams = zod.object({

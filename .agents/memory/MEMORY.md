@@ -1,0 +1,1 @@
+- [Agent secret boundary](agent-secret-boundary.md) — agent integrations use an explicit secret allowlist; public readiness checks never expose values.

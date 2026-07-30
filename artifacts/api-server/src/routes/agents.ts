@@ -3,9 +3,11 @@ import { db, agentEnvironmentsTable } from "@workspace/db";
 import {
   GetAgentEnvironmentParams,
   GetAgentEnvironmentResponse,
+  GetAgentRuntimeStatusResponse,
   ListAgentEnvironmentsResponse,
 } from "@workspace/api-zod";
 import { eq } from "drizzle-orm";
+import { getAgentRuntimeStatus } from "../lib/agent-secrets";
 
 const router: IRouter = Router();
 
@@ -26,6 +28,12 @@ function mapEnv(e: typeof agentEnvironmentsTable.$inferSelect) {
 router.get("/agents", async (req, res): Promise<void> => {
   const environments = await db.select().from(agentEnvironmentsTable);
   res.json(ListAgentEnvironmentsResponse.parse(environments.map(mapEnv)));
+});
+
+router.get("/agents/runtime", async (_req, res): Promise<void> => {
+  res.setHeader("Cache-Control", "no-store");
+  res.setHeader("X-Content-Type-Options", "nosniff");
+  res.json(GetAgentRuntimeStatusResponse.parse(getAgentRuntimeStatus()));
 });
 
 router.get("/agents/:id", async (req, res): Promise<void> => {

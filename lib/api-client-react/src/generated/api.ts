@@ -21,6 +21,7 @@ import type {
 
 import type {
   AgentEnvironment,
+  AgentRuntimeStatus,
   CatalogStats,
   Category,
   CloudComponent,
@@ -665,6 +666,84 @@ export function useListAgentEnvironments<TData = Awaited<ReturnType<typeof listA
  ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
 
   const queryOptions = getListAgentEnvironmentsQueryOptions(options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+
+
+
+
+
+
+export const getGetAgentRuntimeStatusUrl = () => {
+
+
+
+
+  return `/api/agents/runtime`
+}
+
+/**
+ * Returns capability readiness only. Secret values are never exposed.
+ * @summary Get safe agent runtime readiness
+ */
+export const getAgentRuntimeStatus = async ( options?: RequestInit): Promise<AgentRuntimeStatus> => {
+
+  return customFetch<AgentRuntimeStatus>(getGetAgentRuntimeStatusUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getGetAgentRuntimeStatusQueryKey = () => {
+    return [
+    `/api/agents/runtime`
+    ] as const;
+    }
+
+
+export const getGetAgentRuntimeStatusQueryOptions = <TData = Awaited<ReturnType<typeof getAgentRuntimeStatus>>, TError = ErrorType<unknown>>( options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getAgentRuntimeStatus>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetAgentRuntimeStatusQueryKey();
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getAgentRuntimeStatus>>> = ({ signal }) => getAgentRuntimeStatus({ signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getAgentRuntimeStatus>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type GetAgentRuntimeStatusQueryResult = NonNullable<Awaited<ReturnType<typeof getAgentRuntimeStatus>>>
+export type GetAgentRuntimeStatusQueryError = ErrorType<unknown>
+
+
+/**
+ * @summary Get safe agent runtime readiness
+ */
+
+export function useGetAgentRuntimeStatus<TData = Awaited<ReturnType<typeof getAgentRuntimeStatus>>, TError = ErrorType<unknown>>(
+  options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getAgentRuntimeStatus>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getGetAgentRuntimeStatusQueryOptions(options)
 
   const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
 

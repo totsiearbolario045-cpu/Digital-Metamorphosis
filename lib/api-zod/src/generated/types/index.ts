@@ -7,9 +7,12 @@
  */
 
 export * from './agent';
+export * from './agentCapability';
 export * from './agentEnvironment';
 export * from './agentEnvironmentStatus';
 export * from './agentEnvironmentType';
+export * from './agentRuntimeStatus';
+export * from './agentRuntimeStatusStatus';
 export * from './catalogStats';
 export * from './category';
 export * from './cloudComponent';

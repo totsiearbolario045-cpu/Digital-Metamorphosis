@@ -126,6 +126,24 @@ export interface AgentEnvironment {
   agents?: Agent[];
 }
 
+export type AgentRuntimeStatusStatus = typeof AgentRuntimeStatusStatus[keyof typeof AgentRuntimeStatusStatus];
+
+
+export const AgentRuntimeStatusStatus = {
+  ready: 'ready',
+  degraded: 'degraded',
+} as const;
+
+export interface AgentCapability {
+  id: string;
+  configured: boolean;
+}
+
+export interface AgentRuntimeStatus {
+  status: AgentRuntimeStatusStatus;
+  capabilities: AgentCapability[];
+}
+
 export interface ServiceRequestInput {
   serviceId?: string;
   serviceName: string;
