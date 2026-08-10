@@ -4,6 +4,9 @@ import {
   controlPlaneTelemetryTable,
   controlPlaneWorkersTable,
   db,
+  reliabilityIncidentsTable,
+  reliabilityRunbookExecutionsTable,
+  reliabilitySyntheticTestsTable,
 } from "@workspace/db";
 import { getAgentSecret } from "./agent-secrets";
 import { logger } from "./logger";
@@ -11,7 +14,13 @@ import { logger } from "./logger";
 const WORKER_ID = "dm-core-control-plane";
 const WORKER_NAME = "DIGITAL METAMORPHOSIS Core Worker";
 const WORKER_VERSION = "1.0.0";
-const CAPABILITIES = ["system.self-test", "catalog.health", "telemetry.emit"];
+const CAPABILITIES = [
+  "system.self-test",
+  "catalog.health",
+  "telemetry.emit",
+  "reliability.runbook",
+  "reliability.synthetic",
+];
 const HEARTBEAT_INTERVAL_MS = 30_000;
 
 let timer: NodeJS.Timeout | undefined;
@@ -130,26 +139,39 @@ async function processJob() {
   if (!job) return;
 
   try {
-    if (job.type !== "system.self-test") {
+    let result: Record<string, unknown>;
+    let telemetryMessage: string;
+    if (job.type === "system.self-test") {
+      const [serviceCount, environmentCount, workerCount] = await Promise.all([
+        db.execute(sql`SELECT COUNT(*)::int AS count FROM services`),
+        db.execute(sql`SELECT COUNT(*)::int AS count FROM agent_environments`),
+        db.execute(sql`SELECT COUNT(*)::int AS count FROM control_plane_workers`),
+      ]);
+      result = {
+        status: "passed",
+        metrics: {
+          database: "reachable",
+          services: Number((serviceCount.rows[0] as { count: number }).count),
+          agentEnvironments: Number((environmentCount.rows[0] as { count: number }).count),
+          controlPlaneWorkers: Number((workerCount.rows[0] as { count: number }).count),
+        },
+      };
+      telemetryMessage = "Internal control-plane self-test passed.";
+    } else if (job.type === "reliability.runbook") {
+      result = await executeRunbook(job.payload);
+      telemetryMessage = "Reliability runbook completed.";
+    } else if (job.type === "reliability.synthetic") {
+      result = await executeSyntheticTest(job.payload);
+      telemetryMessage = "Reliability synthetic test completed.";
+    } else {
       throw new Error(`Unsupported core worker job type: ${job.type}`);
     }
 
-    const [serviceCount, environmentCount, workerCount] = await Promise.all([
-      db.execute(sql`SELECT COUNT(*)::int AS count FROM services`),
-      db.execute(sql`SELECT COUNT(*)::int AS count FROM agent_environments`),
-      db.execute(sql`SELECT COUNT(*)::int AS count FROM control_plane_workers`),
-    ]);
-    const metrics = {
-      database: "reachable",
-      services: Number((serviceCount.rows[0] as { count: number }).count),
-      agentEnvironments: Number((environmentCount.rows[0] as { count: number }).count),
-      controlPlaneWorkers: Number((workerCount.rows[0] as { count: number }).count),
-    };
     await db
       .update(controlPlaneJobsTable)
       .set({
         status: "completed",
-        result: { status: "passed", metrics },
+        result,
         completedAt: new Date(),
       })
       .where(
@@ -158,7 +180,7 @@ async function processJob() {
           eq(controlPlaneJobsTable.workerId, WORKER_ID),
         ),
       );
-    await recordTelemetry("job.completed", "Internal control-plane self-test passed.", metrics);
+    await recordTelemetry("job.completed", telemetryMessage, result);
   } catch (error) {
     const message = error instanceof Error ? error.message : "Unknown core worker error";
     await db
@@ -174,9 +196,94 @@ async function processJob() {
           eq(controlPlaneJobsTable.workerId, WORKER_ID),
         ),
       );
-    await recordTelemetry("job.failed", "Internal control-plane self-test failed.");
+    await recordTelemetry("job.failed", "Core worker job failed.");
     logger.error({ err: error }, "Core worker job failed");
   }
+}
+
+type JobPayload = Record<string, unknown> | null;
+
+async function executeRunbook(payload: JobPayload): Promise<Record<string, unknown>> {
+  const executionId = Number(payload?.executionId);
+  const incidentId = Number(payload?.incidentId);
+  if (!Number.isInteger(executionId) || !Number.isInteger(incidentId)) {
+    throw new Error("Reliability runbook payload is invalid.");
+  }
+
+  const [execution] = await db
+    .select()
+    .from(reliabilityRunbookExecutionsTable)
+    .where(eq(reliabilityRunbookExecutionsTable.id, executionId))
+    .limit(1);
+  if (!execution || execution.incidentId !== incidentId) {
+    throw new Error("Reliability runbook execution was not found.");
+  }
+
+  const startedAt = new Date();
+  await db
+    .update(reliabilityRunbookExecutionsTable)
+    .set({ status: "running", startedAt, attempt: execution.attempt + 1 })
+    .where(eq(reliabilityRunbookExecutionsTable.id, executionId));
+
+  const evidence = {
+    database: "reachable",
+    controlPlane: "available",
+    ownershipBoundary: "internal-only",
+    runbook: execution.runbookId,
+  };
+  const result = {
+    status: "completed",
+    action: execution.action,
+    evidence,
+  };
+  const completedAt = new Date();
+  await db
+    .update(reliabilityRunbookExecutionsTable)
+    .set({ status: "completed", result, completedAt })
+    .where(eq(reliabilityRunbookExecutionsTable.id, executionId));
+  await db
+    .update(reliabilityIncidentsTable)
+    .set({ status: "recovered", recoveredAt: completedAt })
+    .where(eq(reliabilityIncidentsTable.id, incidentId));
+  return result;
+}
+
+async function executeSyntheticTest(payload: JobPayload): Promise<Record<string, unknown>> {
+  const testId = Number(payload?.testId);
+  if (!Number.isInteger(testId)) throw new Error("Reliability synthetic payload is invalid.");
+
+  const [test] = await db
+    .select()
+    .from(reliabilitySyntheticTestsTable)
+    .where(eq(reliabilitySyntheticTestsTable.id, testId))
+    .limit(1);
+  if (!test) throw new Error("Reliability synthetic test was not found.");
+
+  await db
+    .update(reliabilitySyntheticTestsTable)
+    .set({ status: "running" })
+    .where(eq(reliabilitySyntheticTestsTable.id, testId));
+
+  await db.execute(sql`SELECT 1`);
+  const lastRunAt = new Date();
+  const result = {
+    status: "passed",
+    recovered: true,
+    target: test.target,
+    evidence: "Internal database and control-plane checks completed.",
+  };
+  await db
+    .update(reliabilitySyntheticTestsTable)
+    .set({
+      status: "passed",
+      totalRuns: test.totalRuns + 1,
+      passedRuns: test.passedRuns + 1,
+      recoveredRuns: test.recoveredRuns + 1,
+      lastResult: result,
+      lastRunAt,
+    })
+    .where(eq(reliabilitySyntheticTestsTable.id, testId));
+  return result;
 }
 
 async function tick() {

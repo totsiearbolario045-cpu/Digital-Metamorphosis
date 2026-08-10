@@ -26,6 +26,8 @@ tags:
     description: Infrastructure resource operations
   - name: control-plane
     description: DIGITAL METAMORPHOSIS internal control-plane operations
+  - name: reliability
+    description: Browser reliability, incident response, and recovery operations
 
 paths:
   /healthz:
@@ -403,6 +405,139 @@ paths:
         "401":
           description: Worker authentication failed
 
+  /reliability/events:
+    post:
+      operationId: captureReliabilityEvent
+      tags: [reliability]
+      summary: Capture a sanitized browser reliability event
+      description: Accepts browser errors and client-side network signals without credentials or raw request payloads.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ReliabilityEventInput"
+      responses:
+        "202":
+          description: Event accepted and grouped into an incident
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReliabilityEventAccepted"
+        "400":
+          description: Validation error
+        "413":
+          description: Event payload too large
+
+  /reliability/overview:
+    get:
+      operationId: getReliabilityOverview
+      tags: [reliability]
+      summary: Get browser reliability dashboard data
+      responses:
+        "200":
+          description: Reliability overview
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReliabilityOverview"
+
+  /reliability/incidents:
+    get:
+      operationId: listReliabilityIncidents
+      tags: [reliability]
+      summary: List grouped browser reliability incidents
+      parameters:
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [open, recovering, recovered, awaiting_approval, ignored]
+      responses:
+        "200":
+          description: Reliability incidents
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ReliabilityIncident"
+
+  /reliability/incidents/{id}/approve:
+    post:
+      operationId: approveReliabilityRunbook
+      tags: [reliability]
+      summary: Approve or reject a high-impact recovery runbook
+      security:
+        - ReliabilityOperatorToken: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ReliabilityApprovalInput"
+      responses:
+        "200":
+          description: Approval decision recorded
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReliabilityApproval"
+        "404":
+          description: Approval not found
+        "401":
+          description: Operator authentication failed
+        "503":
+          description: Operator approval capability is not configured
+
+  /reliability/synthetic-tests:
+    get:
+      operationId: listReliabilitySyntheticTests
+      tags: [reliability]
+      summary: List reliability synthetic tests
+      responses:
+        "200":
+          description: Synthetic tests
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ReliabilitySyntheticTest"
+
+  /reliability/synthetic-tests/{id}/run:
+    post:
+      operationId: runReliabilitySyntheticTest
+      tags: [reliability]
+      summary: Queue a reliability synthetic test
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ReliabilitySyntheticTestRunInput"
+      responses:
+        "202":
+          description: Synthetic test queued
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReliabilitySyntheticTest"
+        "404":
+          description: Synthetic test not found
+
   /requests:
     post:
       operationId: submitServiceRequest
@@ -479,6 +614,10 @@ components:
       type: apiKey
       in: header
       name: X-Digital-Metamorphosis-Worker-Token
+    ReliabilityOperatorToken:
+      type: apiKey
+      in: header
+      name: X-Digital-Metamorphosis-Operator-Token
   schemas:
     HealthStatus:
       type: object
@@ -942,6 +1081,309 @@ components:
         - failedJobs24h
         - telemetry24h
         - workers
+
+    ReliabilityEventInput:
+      type: object
+      properties:
+        eventType:
+          type: string
+          enum: [browser.error, browser.rejection, network.error, recovery.success]
+        message:
+          type: string
+          minLength: 1
+          maxLength: 500
+        fingerprint:
+          type: string
+          maxLength: 160
+        incidentFingerprint:
+          type: string
+          maxLength: 160
+        stack:
+          type: string
+          maxLength: 4000
+        route:
+          type: string
+          maxLength: 300
+        browser:
+          type: string
+          maxLength: 120
+        release:
+          type: string
+          maxLength: 120
+        requestUrl:
+          type: string
+          maxLength: 500
+        statusCode:
+          type: integer
+          minimum: 100
+          maximum: 599
+        durationMs:
+          type: integer
+          minimum: 0
+          maximum: 600000
+        metadata:
+          type: object
+          additionalProperties: true
+      required:
+        - eventType
+        - message
+
+    ReliabilityIncident:
+      type: object
+      properties:
+        id:
+          type: string
+        fingerprint:
+          type: string
+        title:
+          type: string
+        category:
+          type: string
+        severity:
+          type: string
+          enum: [info, warning, critical]
+        status:
+          type: string
+          enum: [open, recovering, recovered, awaiting_approval, ignored]
+        route:
+          type: string
+        latestMessage:
+          type: string
+        occurrenceCount:
+          type: integer
+        recoveredCount:
+          type: integer
+        firstSeenAt:
+          type: string
+          format: date-time
+        lastSeenAt:
+          type: string
+          format: date-time
+        recoveredAt:
+          type: string
+          format: date-time
+        activeRunbook:
+          type: string
+        recoveryStatus:
+          type: string
+          enum: [none, queued, running, completed, awaiting_approval, failed]
+      required:
+        - id
+        - fingerprint
+        - title
+        - category
+        - severity
+        - status
+        - latestMessage
+        - occurrenceCount
+        - recoveredCount
+        - firstSeenAt
+        - lastSeenAt
+        - recoveryStatus
+
+    ReliabilityEventAccepted:
+      type: object
+      properties:
+        incident:
+          $ref: "#/components/schemas/ReliabilityIncident"
+        grouped:
+          type: boolean
+        workerAction:
+          type: string
+        workerActionStatus:
+          type: string
+          enum: [queued, not_required, awaiting_approval]
+      required:
+        - incident
+        - grouped
+        - workerAction
+        - workerActionStatus
+
+    ReliabilityRunbookExecution:
+      type: object
+      properties:
+        id:
+          type: string
+        incidentId:
+          type: string
+        runbookId:
+          type: string
+        action:
+          type: string
+        status:
+          type: string
+          enum: [pending, running, completed, failed, awaiting_approval]
+        attempt:
+          type: integer
+        result:
+          type: object
+          additionalProperties: true
+        error:
+          type: string
+        startedAt:
+          type: string
+          format: date-time
+        completedAt:
+          type: string
+          format: date-time
+        createdAt:
+          type: string
+          format: date-time
+      required:
+        - id
+        - incidentId
+        - runbookId
+        - action
+        - status
+        - attempt
+        - createdAt
+
+    ReliabilityApprovalInput:
+      type: object
+      properties:
+        decision:
+          type: string
+          enum: [approve, reject]
+        reviewedBy:
+          type: string
+          minLength: 1
+          maxLength: 120
+        reason:
+          type: string
+          maxLength: 500
+      required:
+        - decision
+        - reviewedBy
+
+    ReliabilityApproval:
+      type: object
+      properties:
+        id:
+          type: string
+        incidentId:
+          type: string
+        executionId:
+          type: string
+        runbookId:
+          type: string
+        action:
+          type: string
+        status:
+          type: string
+          enum: [pending, approved, rejected]
+        requestedBy:
+          type: string
+        reviewedBy:
+          type: string
+        reason:
+          type: string
+        requestedAt:
+          type: string
+          format: date-time
+        reviewedAt:
+          type: string
+          format: date-time
+      required:
+        - id
+        - incidentId
+        - executionId
+        - runbookId
+        - action
+        - status
+        - requestedBy
+        - requestedAt
+
+    ReliabilitySyntheticTest:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        scenario:
+          type: string
+        target:
+          type: string
+        status:
+          type: string
+          enum: [queued, running, passed, failed]
+        totalRuns:
+          type: integer
+        passedRuns:
+          type: integer
+        recoveredRuns:
+          type: integer
+        recoveryRate:
+          type: number
+        lastResult:
+          type: object
+          additionalProperties: true
+        lastRunAt:
+          type: string
+          format: date-time
+      required:
+        - id
+        - name
+        - scenario
+        - target
+        - status
+        - totalRuns
+        - passedRuns
+        - recoveredRuns
+        - recoveryRate
+
+    ReliabilitySyntheticTestRunInput:
+      type: object
+      properties:
+        requestedBy:
+          type: string
+          maxLength: 120
+
+    ReliabilityOverview:
+      type: object
+      properties:
+        activeIncidents:
+          type: integer
+        recoveringIncidents:
+          type: integer
+        recoveredIncidents24h:
+          type: integer
+        events24h:
+          type: integer
+        recoveryRate24h:
+          type: number
+        autoRecovered24h:
+          type: integer
+        pendingApprovals:
+          type: integer
+        syntheticPassRate:
+          type: number
+        operatorApprovalConfigured:
+          type: boolean
+        approvalMode:
+          type: string
+          enum: [configured, locked]
+        incidents:
+          type: array
+          items:
+            $ref: "#/components/schemas/ReliabilityIncident"
+        syntheticTests:
+          type: array
+          items:
+            $ref: "#/components/schemas/ReliabilitySyntheticTest"
+      required:
+        - activeIncidents
+        - recoveringIncidents
+        - recoveredIncidents24h
+        - events24h
+        - recoveryRate24h
+        - autoRecovered24h
+        - pendingApprovals
+        - syntheticPassRate
+        - operatorApprovalConfigured
+        - approvalMode
+        - incidents
+        - syntheticTests
 
     ServiceRequestInput:
       type: object

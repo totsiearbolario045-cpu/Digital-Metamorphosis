@@ -306,6 +306,241 @@ export interface ControlPlaneStatus {
   workers: ControlPlaneWorker[];
 }
 
+export type ReliabilityEventInputEventType = typeof ReliabilityEventInputEventType[keyof typeof ReliabilityEventInputEventType];
+
+
+export const ReliabilityEventInputEventType = {
+  browsererror: 'browser.error',
+  browserrejection: 'browser.rejection',
+  networkerror: 'network.error',
+  recoverysuccess: 'recovery.success',
+} as const;
+
+export type ReliabilityEventInputMetadata = { [key: string]: unknown };
+
+export interface ReliabilityEventInput {
+  eventType: ReliabilityEventInputEventType;
+  /**
+     * @minLength 1
+     * @maxLength 500
+     */
+  message: string;
+  /** @maxLength 160 */
+  fingerprint?: string;
+  /** @maxLength 160 */
+  incidentFingerprint?: string;
+  /** @maxLength 4000 */
+  stack?: string;
+  /** @maxLength 300 */
+  route?: string;
+  /** @maxLength 120 */
+  browser?: string;
+  /** @maxLength 120 */
+  release?: string;
+  /** @maxLength 500 */
+  requestUrl?: string;
+  /**
+     * @minimum 100
+     * @maximum 599
+     */
+  statusCode?: number;
+  /**
+     * @minimum 0
+     * @maximum 600000
+     */
+  durationMs?: number;
+  metadata?: ReliabilityEventInputMetadata;
+}
+
+export type ReliabilityIncidentSeverity = typeof ReliabilityIncidentSeverity[keyof typeof ReliabilityIncidentSeverity];
+
+
+export const ReliabilityIncidentSeverity = {
+  info: 'info',
+  warning: 'warning',
+  critical: 'critical',
+} as const;
+
+export type ReliabilityIncidentStatus = typeof ReliabilityIncidentStatus[keyof typeof ReliabilityIncidentStatus];
+
+
+export const ReliabilityIncidentStatus = {
+  open: 'open',
+  recovering: 'recovering',
+  recovered: 'recovered',
+  awaiting_approval: 'awaiting_approval',
+  ignored: 'ignored',
+} as const;
+
+export type ReliabilityIncidentRecoveryStatus = typeof ReliabilityIncidentRecoveryStatus[keyof typeof ReliabilityIncidentRecoveryStatus];
+
+
+export const ReliabilityIncidentRecoveryStatus = {
+  none: 'none',
+  queued: 'queued',
+  running: 'running',
+  completed: 'completed',
+  awaiting_approval: 'awaiting_approval',
+  failed: 'failed',
+} as const;
+
+export interface ReliabilityIncident {
+  id: string;
+  fingerprint: string;
+  title: string;
+  category: string;
+  severity: ReliabilityIncidentSeverity;
+  status: ReliabilityIncidentStatus;
+  route?: string;
+  latestMessage: string;
+  occurrenceCount: number;
+  recoveredCount: number;
+  firstSeenAt: string;
+  lastSeenAt: string;
+  recoveredAt?: string;
+  activeRunbook?: string;
+  recoveryStatus: ReliabilityIncidentRecoveryStatus;
+}
+
+export type ReliabilityEventAcceptedWorkerActionStatus = typeof ReliabilityEventAcceptedWorkerActionStatus[keyof typeof ReliabilityEventAcceptedWorkerActionStatus];
+
+
+export const ReliabilityEventAcceptedWorkerActionStatus = {
+  queued: 'queued',
+  not_required: 'not_required',
+  awaiting_approval: 'awaiting_approval',
+} as const;
+
+export interface ReliabilityEventAccepted {
+  incident: ReliabilityIncident;
+  grouped: boolean;
+  workerAction: string;
+  workerActionStatus: ReliabilityEventAcceptedWorkerActionStatus;
+}
+
+export type ReliabilityRunbookExecutionStatus = typeof ReliabilityRunbookExecutionStatus[keyof typeof ReliabilityRunbookExecutionStatus];
+
+
+export const ReliabilityRunbookExecutionStatus = {
+  pending: 'pending',
+  running: 'running',
+  completed: 'completed',
+  failed: 'failed',
+  awaiting_approval: 'awaiting_approval',
+} as const;
+
+export type ReliabilityRunbookExecutionResult = { [key: string]: unknown };
+
+export interface ReliabilityRunbookExecution {
+  id: string;
+  incidentId: string;
+  runbookId: string;
+  action: string;
+  status: ReliabilityRunbookExecutionStatus;
+  attempt: number;
+  result?: ReliabilityRunbookExecutionResult;
+  error?: string;
+  startedAt?: string;
+  completedAt?: string;
+  createdAt: string;
+}
+
+export type ReliabilityApprovalInputDecision = typeof ReliabilityApprovalInputDecision[keyof typeof ReliabilityApprovalInputDecision];
+
+
+export const ReliabilityApprovalInputDecision = {
+  approve: 'approve',
+  reject: 'reject',
+} as const;
+
+export interface ReliabilityApprovalInput {
+  decision: ReliabilityApprovalInputDecision;
+  /**
+     * @minLength 1
+     * @maxLength 120
+     */
+  reviewedBy: string;
+  /** @maxLength 500 */
+  reason?: string;
+}
+
+export type ReliabilityApprovalStatus = typeof ReliabilityApprovalStatus[keyof typeof ReliabilityApprovalStatus];
+
+
+export const ReliabilityApprovalStatus = {
+  pending: 'pending',
+  approved: 'approved',
+  rejected: 'rejected',
+} as const;
+
+export interface ReliabilityApproval {
+  id: string;
+  incidentId: string;
+  executionId: string;
+  runbookId: string;
+  action: string;
+  status: ReliabilityApprovalStatus;
+  requestedBy: string;
+  reviewedBy?: string;
+  reason?: string;
+  requestedAt: string;
+  reviewedAt?: string;
+}
+
+export type ReliabilitySyntheticTestStatus = typeof ReliabilitySyntheticTestStatus[keyof typeof ReliabilitySyntheticTestStatus];
+
+
+export const ReliabilitySyntheticTestStatus = {
+  queued: 'queued',
+  running: 'running',
+  passed: 'passed',
+  failed: 'failed',
+} as const;
+
+export type ReliabilitySyntheticTestLastResult = { [key: string]: unknown };
+
+export interface ReliabilitySyntheticTest {
+  id: string;
+  name: string;
+  scenario: string;
+  target: string;
+  status: ReliabilitySyntheticTestStatus;
+  totalRuns: number;
+  passedRuns: number;
+  recoveredRuns: number;
+  recoveryRate: number;
+  lastResult?: ReliabilitySyntheticTestLastResult;
+  lastRunAt?: string;
+}
+
+export interface ReliabilitySyntheticTestRunInput {
+  /** @maxLength 120 */
+  requestedBy?: string;
+}
+
+export type ReliabilityOverviewApprovalMode = typeof ReliabilityOverviewApprovalMode[keyof typeof ReliabilityOverviewApprovalMode];
+
+
+export const ReliabilityOverviewApprovalMode = {
+  configured: 'configured',
+  locked: 'locked',
+} as const;
+
+export interface ReliabilityOverview {
+  activeIncidents: number;
+  recoveringIncidents: number;
+  recoveredIncidents24h: number;
+  events24h: number;
+  recoveryRate24h: number;
+  autoRecovered24h: number;
+  pendingApprovals: number;
+  syntheticPassRate: number;
+  operatorApprovalConfigured: boolean;
+  approvalMode: ReliabilityOverviewApprovalMode;
+  incidents: ReliabilityIncident[];
+  syntheticTests: ReliabilitySyntheticTest[];
+}
+
 export interface ServiceRequestInput {
   serviceId?: string;
   serviceName: string;
@@ -372,6 +607,21 @@ region?: string;
 status?: string;
 search?: string;
 };
+
+export type ListReliabilityIncidentsParams = {
+status?: ListReliabilityIncidentsStatus;
+};
+
+export type ListReliabilityIncidentsStatus = typeof ListReliabilityIncidentsStatus[keyof typeof ListReliabilityIncidentsStatus];
+
+
+export const ListReliabilityIncidentsStatus = {
+  open: 'open',
+  recovering: 'recovering',
+  recovered: 'recovered',
+  awaiting_approval: 'awaiting_approval',
+  ignored: 'ignored',
+} as const;
 
 export type ListResourcesParams = {
 region?: string;

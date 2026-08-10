@@ -131,6 +131,8 @@ router.get("/control-plane/status", async (_req, res): Promise<void> => {
 
   const onlineWorkers = workers.filter(
     (worker) =>
+      Boolean(getAgentSecret("controlPlaneWorkers"))
+      &&
       worker.status === "online"
       && worker.lastHeartbeatAt
       && worker.lastHeartbeatAt >= heartbeatCutoff,

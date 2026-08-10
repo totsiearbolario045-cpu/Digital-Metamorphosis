@@ -359,6 +359,193 @@ export const IngestControlPlaneTelemetryBody = zod.object({
 
 
 /**
+ * Accepts browser errors and client-side network signals without credentials or raw request payloads.
+ * @summary Capture a sanitized browser reliability event
+ */
+export const captureReliabilityEventBodyMessageMax = 500;
+
+export const captureReliabilityEventBodyFingerprintMax = 160;
+
+export const captureReliabilityEventBodyIncidentFingerprintMax = 160;
+
+export const captureReliabilityEventBodyStackMax = 4000;
+
+export const captureReliabilityEventBodyRouteMax = 300;
+
+export const captureReliabilityEventBodyBrowserMax = 120;
+
+export const captureReliabilityEventBodyReleaseMax = 120;
+
+export const captureReliabilityEventBodyRequestUrlMax = 500;
+
+export const captureReliabilityEventBodyStatusCodeMin = 100;
+export const captureReliabilityEventBodyStatusCodeMax = 599;
+
+export const captureReliabilityEventBodyDurationMsMin = 0;
+export const captureReliabilityEventBodyDurationMsMax = 600000;
+
+
+
+export const CaptureReliabilityEventBody = zod.object({
+  "eventType": zod.enum(['browser.error', 'browser.rejection', 'network.error', 'recovery.success']),
+  "message": zod.string().min(1).max(captureReliabilityEventBodyMessageMax),
+  "fingerprint": zod.string().max(captureReliabilityEventBodyFingerprintMax).optional(),
+  "incidentFingerprint": zod.string().max(captureReliabilityEventBodyIncidentFingerprintMax).optional(),
+  "stack": zod.string().max(captureReliabilityEventBodyStackMax).optional(),
+  "route": zod.string().max(captureReliabilityEventBodyRouteMax).optional(),
+  "browser": zod.string().max(captureReliabilityEventBodyBrowserMax).optional(),
+  "release": zod.string().max(captureReliabilityEventBodyReleaseMax).optional(),
+  "requestUrl": zod.string().max(captureReliabilityEventBodyRequestUrlMax).optional(),
+  "statusCode": zod.number().min(captureReliabilityEventBodyStatusCodeMin).max(captureReliabilityEventBodyStatusCodeMax).optional(),
+  "durationMs": zod.number().min(captureReliabilityEventBodyDurationMsMin).max(captureReliabilityEventBodyDurationMsMax).optional(),
+  "metadata": zod.record(zod.string(), zod.unknown()).optional()
+})
+
+
+/**
+ * @summary Get browser reliability dashboard data
+ */
+export const GetReliabilityOverviewResponse = zod.object({
+  "activeIncidents": zod.number(),
+  "recoveringIncidents": zod.number(),
+  "recoveredIncidents24h": zod.number(),
+  "events24h": zod.number(),
+  "recoveryRate24h": zod.number(),
+  "autoRecovered24h": zod.number(),
+  "pendingApprovals": zod.number(),
+  "syntheticPassRate": zod.number(),
+  "operatorApprovalConfigured": zod.boolean(),
+  "approvalMode": zod.enum(['configured', 'locked']),
+  "incidents": zod.array(zod.object({
+  "id": zod.string(),
+  "fingerprint": zod.string(),
+  "title": zod.string(),
+  "category": zod.string(),
+  "severity": zod.enum(['info', 'warning', 'critical']),
+  "status": zod.enum(['open', 'recovering', 'recovered', 'awaiting_approval', 'ignored']),
+  "route": zod.string().optional(),
+  "latestMessage": zod.string(),
+  "occurrenceCount": zod.number(),
+  "recoveredCount": zod.number(),
+  "firstSeenAt": zod.coerce.date(),
+  "lastSeenAt": zod.coerce.date(),
+  "recoveredAt": zod.coerce.date().optional(),
+  "activeRunbook": zod.string().optional(),
+  "recoveryStatus": zod.enum(['none', 'queued', 'running', 'completed', 'awaiting_approval', 'failed'])
+})),
+  "syntheticTests": zod.array(zod.object({
+  "id": zod.string(),
+  "name": zod.string(),
+  "scenario": zod.string(),
+  "target": zod.string(),
+  "status": zod.enum(['queued', 'running', 'passed', 'failed']),
+  "totalRuns": zod.number(),
+  "passedRuns": zod.number(),
+  "recoveredRuns": zod.number(),
+  "recoveryRate": zod.number(),
+  "lastResult": zod.record(zod.string(), zod.unknown()).optional(),
+  "lastRunAt": zod.coerce.date().optional()
+}))
+})
+
+
+/**
+ * @summary List grouped browser reliability incidents
+ */
+export const ListReliabilityIncidentsQueryParams = zod.object({
+  "status": zod.enum(['open', 'recovering', 'recovered', 'awaiting_approval', 'ignored']).optional()
+})
+
+export const ListReliabilityIncidentsResponseItem = zod.object({
+  "id": zod.string(),
+  "fingerprint": zod.string(),
+  "title": zod.string(),
+  "category": zod.string(),
+  "severity": zod.enum(['info', 'warning', 'critical']),
+  "status": zod.enum(['open', 'recovering', 'recovered', 'awaiting_approval', 'ignored']),
+  "route": zod.string().optional(),
+  "latestMessage": zod.string(),
+  "occurrenceCount": zod.number(),
+  "recoveredCount": zod.number(),
+  "firstSeenAt": zod.coerce.date(),
+  "lastSeenAt": zod.coerce.date(),
+  "recoveredAt": zod.coerce.date().optional(),
+  "activeRunbook": zod.string().optional(),
+  "recoveryStatus": zod.enum(['none', 'queued', 'running', 'completed', 'awaiting_approval', 'failed'])
+})
+export const ListReliabilityIncidentsResponse = zod.array(ListReliabilityIncidentsResponseItem)
+
+
+/**
+ * @summary Approve or reject a high-impact recovery runbook
+ */
+export const ApproveReliabilityRunbookParams = zod.object({
+  "id": zod.coerce.string()
+})
+
+export const approveReliabilityRunbookBodyReviewedByMax = 120;
+
+export const approveReliabilityRunbookBodyReasonMax = 500;
+
+
+
+export const ApproveReliabilityRunbookBody = zod.object({
+  "decision": zod.enum(['approve', 'reject']),
+  "reviewedBy": zod.string().min(1).max(approveReliabilityRunbookBodyReviewedByMax),
+  "reason": zod.string().max(approveReliabilityRunbookBodyReasonMax).optional()
+})
+
+export const ApproveReliabilityRunbookResponse = zod.object({
+  "id": zod.string(),
+  "incidentId": zod.string(),
+  "executionId": zod.string(),
+  "runbookId": zod.string(),
+  "action": zod.string(),
+  "status": zod.enum(['pending', 'approved', 'rejected']),
+  "requestedBy": zod.string(),
+  "reviewedBy": zod.string().optional(),
+  "reason": zod.string().optional(),
+  "requestedAt": zod.coerce.date(),
+  "reviewedAt": zod.coerce.date().optional()
+})
+
+
+/**
+ * @summary List reliability synthetic tests
+ */
+export const ListReliabilitySyntheticTestsResponseItem = zod.object({
+  "id": zod.string(),
+  "name": zod.string(),
+  "scenario": zod.string(),
+  "target": zod.string(),
+  "status": zod.enum(['queued', 'running', 'passed', 'failed']),
+  "totalRuns": zod.number(),
+  "passedRuns": zod.number(),
+  "recoveredRuns": zod.number(),
+  "recoveryRate": zod.number(),
+  "lastResult": zod.record(zod.string(), zod.unknown()).optional(),
+  "lastRunAt": zod.coerce.date().optional()
+})
+export const ListReliabilitySyntheticTestsResponse = zod.array(ListReliabilitySyntheticTestsResponseItem)
+
+
+/**
+ * @summary Queue a reliability synthetic test
+ */
+export const RunReliabilitySyntheticTestParams = zod.object({
+  "id": zod.coerce.string()
+})
+
+export const runReliabilitySyntheticTestBodyRequestedByMax = 120;
+
+
+
+export const RunReliabilitySyntheticTestBody = zod.object({
+  "requestedBy": zod.string().max(runReliabilitySyntheticTestBodyRequestedByMax).optional()
+})
+
+
+/**
  * @summary Submit a service inquiry/request
  */
 export const SubmitServiceRequestBody = zod.object({

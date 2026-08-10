@@ -3,5 +3,6 @@ export * from "./services";
 export * from "./cloud_components";
 export * from "./agent_environments";
 export * from "./control_plane";
+export * from "./reliability";
 export * from "./service_requests";
 export * from "./resources";

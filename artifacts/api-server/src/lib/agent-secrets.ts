@@ -12,6 +12,7 @@ const AGENT_SECRET_KEYS = {
   lambdaTelemetry: "LAMBDA_TELEMETRY",
   devopsCompliance: "devops_compliance",
   controlPlaneWorkers: "digital_metamorphosis_workers",
+  reliabilityOperator: "digital_metamorphosis_operator",
 } as const;
 
 export type AgentSecretName = keyof typeof AGENT_SECRET_KEYS;
@@ -61,6 +62,10 @@ export function getAgentRuntimeStatus() {
     {
       id: "control-plane-workers",
       configured: Boolean(getAgentSecret("controlPlaneWorkers")),
+    },
+    {
+      id: "reliability-operator",
+      configured: Boolean(getAgentSecret("reliabilityOperator")),
     },
   ];
 

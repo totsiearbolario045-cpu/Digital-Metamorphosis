@@ -38,8 +38,17 @@ import type {
   ErrorResponse,
   HealthStatus,
   ListCloudComponentsParams,
+  ListReliabilityIncidentsParams,
   ListResourcesParams,
   ListServicesParams,
+  ReliabilityApproval,
+  ReliabilityApprovalInput,
+  ReliabilityEventAccepted,
+  ReliabilityEventInput,
+  ReliabilityIncident,
+  ReliabilityOverview,
+  ReliabilitySyntheticTest,
+  ReliabilitySyntheticTestRunInput,
   Resource,
   Service,
   ServiceRequest,
@@ -1347,6 +1356,460 @@ export const useIngestControlPlaneTelemetry = <TError = ErrorType<void>,
         TContext
       > => {
       return useMutation(getIngestControlPlaneTelemetryMutationOptions(options));
+    }
+
+export const getCaptureReliabilityEventUrl = () => {
+
+
+
+
+  return `/api/reliability/events`
+}
+
+/**
+ * Accepts browser errors and client-side network signals without credentials or raw request payloads.
+ * @summary Capture a sanitized browser reliability event
+ */
+export const captureReliabilityEvent = async (reliabilityEventInput: ReliabilityEventInput, options?: RequestInit): Promise<ReliabilityEventAccepted> => {
+
+  return customFetch<ReliabilityEventAccepted>(getCaptureReliabilityEventUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      reliabilityEventInput,)
+  }
+);}
+
+
+
+
+export const getCaptureReliabilityEventMutationOptions = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof captureReliabilityEvent>>, TError,{data: BodyType<ReliabilityEventInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof captureReliabilityEvent>>, TError,{data: BodyType<ReliabilityEventInput>}, TContext> => {
+
+const mutationKey = ['captureReliabilityEvent'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof captureReliabilityEvent>>, {data: BodyType<ReliabilityEventInput>}> = (props) => {
+          const {data} = props ?? {};
+
+          return  captureReliabilityEvent(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type CaptureReliabilityEventMutationResult = NonNullable<Awaited<ReturnType<typeof captureReliabilityEvent>>>
+    export type CaptureReliabilityEventMutationBody = BodyType<ReliabilityEventInput>
+    export type CaptureReliabilityEventMutationError = ErrorType<void>
+
+    /**
+ * @summary Capture a sanitized browser reliability event
+ */
+export const useCaptureReliabilityEvent = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof captureReliabilityEvent>>, TError,{data: BodyType<ReliabilityEventInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof captureReliabilityEvent>>,
+        TError,
+        {data: BodyType<ReliabilityEventInput>},
+        TContext
+      > => {
+      return useMutation(getCaptureReliabilityEventMutationOptions(options));
+    }
+
+export const getGetReliabilityOverviewUrl = () => {
+
+
+
+
+  return `/api/reliability/overview`
+}
+
+/**
+ * @summary Get browser reliability dashboard data
+ */
+export const getReliabilityOverview = async ( options?: RequestInit): Promise<ReliabilityOverview> => {
+
+  return customFetch<ReliabilityOverview>(getGetReliabilityOverviewUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getGetReliabilityOverviewQueryKey = () => {
+    return [
+    `/api/reliability/overview`
+    ] as const;
+    }
+
+
+export const getGetReliabilityOverviewQueryOptions = <TData = Awaited<ReturnType<typeof getReliabilityOverview>>, TError = ErrorType<unknown>>( options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getReliabilityOverview>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetReliabilityOverviewQueryKey();
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getReliabilityOverview>>> = ({ signal }) => getReliabilityOverview({ signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getReliabilityOverview>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type GetReliabilityOverviewQueryResult = NonNullable<Awaited<ReturnType<typeof getReliabilityOverview>>>
+export type GetReliabilityOverviewQueryError = ErrorType<unknown>
+
+
+/**
+ * @summary Get browser reliability dashboard data
+ */
+
+export function useGetReliabilityOverview<TData = Awaited<ReturnType<typeof getReliabilityOverview>>, TError = ErrorType<unknown>>(
+  options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getReliabilityOverview>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getGetReliabilityOverviewQueryOptions(options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+
+
+
+
+
+
+export const getListReliabilityIncidentsUrl = (params?: ListReliabilityIncidentsParams,) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : value.toString())
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0 ? `/api/reliability/incidents?${stringifiedParams}` : `/api/reliability/incidents`
+}
+
+/**
+ * @summary List grouped browser reliability incidents
+ */
+export const listReliabilityIncidents = async (params?: ListReliabilityIncidentsParams, options?: RequestInit): Promise<ReliabilityIncident[]> => {
+
+  return customFetch<ReliabilityIncident[]>(getListReliabilityIncidentsUrl(params),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getListReliabilityIncidentsQueryKey = (params?: ListReliabilityIncidentsParams,) => {
+    return [
+    `/api/reliability/incidents`, ...(params ? [params] : [])
+    ] as const;
+    }
+
+
+export const getListReliabilityIncidentsQueryOptions = <TData = Awaited<ReturnType<typeof listReliabilityIncidents>>, TError = ErrorType<unknown>>(params?: ListReliabilityIncidentsParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listReliabilityIncidents>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getListReliabilityIncidentsQueryKey(params);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof listReliabilityIncidents>>> = ({ signal }) => listReliabilityIncidents(params, { signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof listReliabilityIncidents>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type ListReliabilityIncidentsQueryResult = NonNullable<Awaited<ReturnType<typeof listReliabilityIncidents>>>
+export type ListReliabilityIncidentsQueryError = ErrorType<unknown>
+
+
+/**
+ * @summary List grouped browser reliability incidents
+ */
+
+export function useListReliabilityIncidents<TData = Awaited<ReturnType<typeof listReliabilityIncidents>>, TError = ErrorType<unknown>>(
+ params?: ListReliabilityIncidentsParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listReliabilityIncidents>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getListReliabilityIncidentsQueryOptions(params,options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+
+
+
+
+
+
+export const getApproveReliabilityRunbookUrl = (id: string,) => {
+
+
+
+
+  return `/api/reliability/incidents/${id}/approve`
+}
+
+/**
+ * @summary Approve or reject a high-impact recovery runbook
+ */
+export const approveReliabilityRunbook = async (id: string,
+    reliabilityApprovalInput: ReliabilityApprovalInput, options?: RequestInit): Promise<ReliabilityApproval> => {
+
+  return customFetch<ReliabilityApproval>(getApproveReliabilityRunbookUrl(id),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      reliabilityApprovalInput,)
+  }
+);}
+
+
+
+
+export const getApproveReliabilityRunbookMutationOptions = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof approveReliabilityRunbook>>, TError,{id: string;data: BodyType<ReliabilityApprovalInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof approveReliabilityRunbook>>, TError,{id: string;data: BodyType<ReliabilityApprovalInput>}, TContext> => {
+
+const mutationKey = ['approveReliabilityRunbook'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof approveReliabilityRunbook>>, {id: string;data: BodyType<ReliabilityApprovalInput>}> = (props) => {
+          const {id,data} = props ?? {};
+
+          return  approveReliabilityRunbook(id,data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type ApproveReliabilityRunbookMutationResult = NonNullable<Awaited<ReturnType<typeof approveReliabilityRunbook>>>
+    export type ApproveReliabilityRunbookMutationBody = BodyType<ReliabilityApprovalInput>
+    export type ApproveReliabilityRunbookMutationError = ErrorType<void>
+
+    /**
+ * @summary Approve or reject a high-impact recovery runbook
+ */
+export const useApproveReliabilityRunbook = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof approveReliabilityRunbook>>, TError,{id: string;data: BodyType<ReliabilityApprovalInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof approveReliabilityRunbook>>,
+        TError,
+        {id: string;data: BodyType<ReliabilityApprovalInput>},
+        TContext
+      > => {
+      return useMutation(getApproveReliabilityRunbookMutationOptions(options));
+    }
+
+export const getListReliabilitySyntheticTestsUrl = () => {
+
+
+
+
+  return `/api/reliability/synthetic-tests`
+}
+
+/**
+ * @summary List reliability synthetic tests
+ */
+export const listReliabilitySyntheticTests = async ( options?: RequestInit): Promise<ReliabilitySyntheticTest[]> => {
+
+  return customFetch<ReliabilitySyntheticTest[]>(getListReliabilitySyntheticTestsUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getListReliabilitySyntheticTestsQueryKey = () => {
+    return [
+    `/api/reliability/synthetic-tests`
+    ] as const;
+    }
+
+
+export const getListReliabilitySyntheticTestsQueryOptions = <TData = Awaited<ReturnType<typeof listReliabilitySyntheticTests>>, TError = ErrorType<unknown>>( options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listReliabilitySyntheticTests>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getListReliabilitySyntheticTestsQueryKey();
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof listReliabilitySyntheticTests>>> = ({ signal }) => listReliabilitySyntheticTests({ signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof listReliabilitySyntheticTests>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type ListReliabilitySyntheticTestsQueryResult = NonNullable<Awaited<ReturnType<typeof listReliabilitySyntheticTests>>>
+export type ListReliabilitySyntheticTestsQueryError = ErrorType<unknown>
+
+
+/**
+ * @summary List reliability synthetic tests
+ */
+
+export function useListReliabilitySyntheticTests<TData = Awaited<ReturnType<typeof listReliabilitySyntheticTests>>, TError = ErrorType<unknown>>(
+  options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listReliabilitySyntheticTests>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getListReliabilitySyntheticTestsQueryOptions(options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+
+
+
+
+
+
+export const getRunReliabilitySyntheticTestUrl = (id: string,) => {
+
+
+
+
+  return `/api/reliability/synthetic-tests/${id}/run`
+}
+
+/**
+ * @summary Queue a reliability synthetic test
+ */
+export const runReliabilitySyntheticTest = async (id: string,
+    reliabilitySyntheticTestRunInput: ReliabilitySyntheticTestRunInput, options?: RequestInit): Promise<ReliabilitySyntheticTest> => {
+
+  return customFetch<ReliabilitySyntheticTest>(getRunReliabilitySyntheticTestUrl(id),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      reliabilitySyntheticTestRunInput,)
+  }
+);}
+
+
+
+
+export const getRunReliabilitySyntheticTestMutationOptions = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof runReliabilitySyntheticTest>>, TError,{id: string;data: BodyType<ReliabilitySyntheticTestRunInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof runReliabilitySyntheticTest>>, TError,{id: string;data: BodyType<ReliabilitySyntheticTestRunInput>}, TContext> => {
+
+const mutationKey = ['runReliabilitySyntheticTest'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof runReliabilitySyntheticTest>>, {id: string;data: BodyType<ReliabilitySyntheticTestRunInput>}> = (props) => {
+          const {id,data} = props ?? {};
+
+          return  runReliabilitySyntheticTest(id,data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type RunReliabilitySyntheticTestMutationResult = NonNullable<Awaited<ReturnType<typeof runReliabilitySyntheticTest>>>
+    export type RunReliabilitySyntheticTestMutationBody = BodyType<ReliabilitySyntheticTestRunInput>
+    export type RunReliabilitySyntheticTestMutationError = ErrorType<void>
+
+    /**
+ * @summary Queue a reliability synthetic test
+ */
+export const useRunReliabilitySyntheticTest = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof runReliabilitySyntheticTest>>, TError,{id: string;data: BodyType<ReliabilitySyntheticTestRunInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof runReliabilitySyntheticTest>>,
+        TError,
+        {id: string;data: BodyType<ReliabilitySyntheticTestRunInput>},
+        TContext
+      > => {
+      return useMutation(getRunReliabilitySyntheticTestMutationOptions(options));
     }
 
 export const getSubmitServiceRequestUrl = () => {

@@ -13,6 +13,7 @@ import Agents from "@/pages/Agents";
 import Request from "@/pages/Request";
 import About from "@/pages/About";
 import Operations from "@/pages/Operations";
+import { installBrowserReliabilityCapture } from "@/lib/browser-reliability";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -45,6 +46,7 @@ function App() {
   useEffect(() => {
     // Force dark mode
     document.documentElement.classList.add("dark");
+    installBrowserReliabilityCapture();
   }, []);
 
   return (
