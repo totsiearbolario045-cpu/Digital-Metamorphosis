@@ -7,3 +7,4 @@ export * from "./reliability";
 export * from "./service_requests";
 export * from "./resources";
 export * from "./production_solutions";
+export * from "./research_solutions";

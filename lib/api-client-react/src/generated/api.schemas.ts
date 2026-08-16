@@ -144,23 +144,23 @@ export interface AgentRuntimeStatus {
   capabilities: AgentCapability[];
 }
 
-export type ProductionSolutionStatus = typeof ProductionSolutionStatus[keyof typeof ProductionSolutionStatus];
+export type EnvironmentSolutionStatus = typeof EnvironmentSolutionStatus[keyof typeof EnvironmentSolutionStatus];
 
 
-export const ProductionSolutionStatus = {
+export const EnvironmentSolutionStatus = {
   ready: 'ready',
   active: 'active',
   limited: 'limited',
   planned: 'planned',
 } as const;
 
-export interface ProductionSolution {
+export interface EnvironmentSolution {
   id: string;
   slug: string;
   name: string;
   description: string;
   category: string;
-  status: ProductionSolutionStatus;
+  status: EnvironmentSolutionStatus;
   /**
      * @minimum 0
      * @maximum 100
@@ -177,7 +177,16 @@ export interface ProductionEnvironmentDashboard {
   readySolutions: number;
   averageReadiness: number;
   categories: string[];
-  solutions: ProductionSolution[];
+  solutions: EnvironmentSolution[];
+}
+
+export interface ResearchEnvironmentDashboard {
+  environment: AgentEnvironment;
+  solutionCount: number;
+  readySolutions: number;
+  averageReadiness: number;
+  categories: string[];
+  solutions: EnvironmentSolution[];
 }
 
 export type ControlPlaneWorkerStatus = typeof ControlPlaneWorkerStatus[keyof typeof ControlPlaneWorkerStatus];

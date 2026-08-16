@@ -14,6 +14,7 @@ import Request from "@/pages/Request";
 import About from "@/pages/About";
 import Operations from "@/pages/Operations";
 import ProductionEnvironment from "@/pages/ProductionEnvironment";
+import ResearchEnvironment from "@/pages/ResearchEnvironment";
 import { installBrowserReliabilityCapture } from "@/lib/browser-reliability";
 
 const queryClient = new QueryClient({
@@ -35,6 +36,7 @@ function Router() {
         <Route path="/cloud-components" component={CloudComponents} />
         <Route path="/agents" component={Agents} />
         <Route path="/agents/production" component={ProductionEnvironment} />
+        <Route path="/agents/research" component={ResearchEnvironment} />
         <Route path="/operations" component={Operations} />
         <Route path="/request" component={Request} />
         <Route path="/about" component={About} />

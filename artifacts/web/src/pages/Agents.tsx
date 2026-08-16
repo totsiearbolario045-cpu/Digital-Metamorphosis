@@ -105,6 +105,16 @@ export default function Agents() {
                   </Link>
                 </div>
               )}
+              {env.slug === "research" && (
+                <div className="mt-auto border-t border-border/50 p-4">
+                  <Link href="/agents/research">
+                    <div className="flex cursor-pointer items-center justify-between rounded-sm border border-violet-300/30 bg-violet-300/5 px-4 py-3 text-xs font-mono uppercase tracking-wider text-violet-200 transition-colors hover:bg-violet-300/10">
+                      Open Research micro-dashboard
+                      <ArrowUpRight className="h-4 w-4" />
+                    </div>
+                  </Link>
+                </div>
+              )}
             </motion.div>
           ))}
         </div>

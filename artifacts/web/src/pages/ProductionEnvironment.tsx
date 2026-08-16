@@ -22,7 +22,7 @@ import {
 import {
   getGetProductionEnvironmentDashboardQueryKey,
   useGetProductionEnvironmentDashboard,
-  type ProductionSolution,
+  type EnvironmentSolution,
 } from "@workspace/api-client-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
@@ -59,7 +59,7 @@ function SolutionCard({
   selected,
   onSelect,
 }: {
-  solution: ProductionSolution;
+  solution: EnvironmentSolution;
   selected: boolean;
   onSelect: () => void;
 }) {
@@ -127,7 +127,7 @@ export default function ProductionEnvironment() {
   });
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [search, setSearch] = useState("");
-  const [selectedSolution, setSelectedSolution] = useState<ProductionSolution | null>(null);
+  const [selectedSolution, setSelectedSolution] = useState<EnvironmentSolution | null>(null);
 
   const filteredSolutions = useMemo(() => {
     if (!data) return [];

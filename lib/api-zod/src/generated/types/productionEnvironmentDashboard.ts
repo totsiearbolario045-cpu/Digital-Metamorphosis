@@ -6,7 +6,7 @@
  * OpenAPI spec version: 0.1.0
  */
 import type { AgentEnvironment } from './agentEnvironment';
-import type { ProductionSolution } from './productionSolution';
+import type { EnvironmentSolution } from './environmentSolution';
 
 export interface ProductionEnvironmentDashboard {
   environment: AgentEnvironment;
@@ -14,5 +14,5 @@ export interface ProductionEnvironmentDashboard {
   readySolutions: number;
   averageReadiness: number;
   categories: string[];
-  solutions: ProductionSolution[];
+  solutions: EnvironmentSolution[];
 }

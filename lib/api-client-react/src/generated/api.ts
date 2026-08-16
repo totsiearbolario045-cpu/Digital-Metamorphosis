@@ -50,6 +50,7 @@ import type {
   ReliabilityOverview,
   ReliabilitySyntheticTest,
   ReliabilitySyntheticTestRunInput,
+  ResearchEnvironmentDashboard,
   Resource,
   Service,
   ServiceRequest,
@@ -919,6 +920,84 @@ export function useGetProductionEnvironmentDashboard<TData = Awaited<ReturnType<
  ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
 
   const queryOptions = getGetProductionEnvironmentDashboardQueryOptions(options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+
+
+
+
+
+
+export const getGetResearchEnvironmentDashboardUrl = () => {
+
+
+
+
+  return `/api/agents/research`
+}
+
+/**
+ * Returns the database-backed Research environment overview and its specialized solutions.
+ * @summary Get the Research AI Environment micro-dashboard
+ */
+export const getResearchEnvironmentDashboard = async ( options?: RequestInit): Promise<ResearchEnvironmentDashboard> => {
+
+  return customFetch<ResearchEnvironmentDashboard>(getGetResearchEnvironmentDashboardUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getGetResearchEnvironmentDashboardQueryKey = () => {
+    return [
+    `/api/agents/research`
+    ] as const;
+    }
+
+
+export const getGetResearchEnvironmentDashboardQueryOptions = <TData = Awaited<ReturnType<typeof getResearchEnvironmentDashboard>>, TError = ErrorType<unknown>>( options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getResearchEnvironmentDashboard>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetResearchEnvironmentDashboardQueryKey();
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getResearchEnvironmentDashboard>>> = ({ signal }) => getResearchEnvironmentDashboard({ signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getResearchEnvironmentDashboard>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type GetResearchEnvironmentDashboardQueryResult = NonNullable<Awaited<ReturnType<typeof getResearchEnvironmentDashboard>>>
+export type GetResearchEnvironmentDashboardQueryError = ErrorType<unknown>
+
+
+/**
+ * @summary Get the Research AI Environment micro-dashboard
+ */
+
+export function useGetResearchEnvironmentDashboard<TData = Awaited<ReturnType<typeof getResearchEnvironmentDashboard>>, TError = ErrorType<unknown>>(
+  options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getResearchEnvironmentDashboard>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getGetResearchEnvironmentDashboardQueryOptions(options)
 
   const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
 

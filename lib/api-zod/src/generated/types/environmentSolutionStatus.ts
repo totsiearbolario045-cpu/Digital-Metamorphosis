@@ -6,10 +6,10 @@
  * OpenAPI spec version: 0.1.0
  */
 
-export type ProductionSolutionStatus = typeof ProductionSolutionStatus[keyof typeof ProductionSolutionStatus];
+export type EnvironmentSolutionStatus = typeof EnvironmentSolutionStatus[keyof typeof EnvironmentSolutionStatus];
 
 
-export const ProductionSolutionStatus = {
+export const EnvironmentSolutionStatus = {
   ready: 'ready',
   active: 'active',
   limited: 'limited',

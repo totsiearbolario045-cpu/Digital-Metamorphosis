@@ -247,6 +247,20 @@ paths:
               schema:
                 $ref: "#/components/schemas/ProductionEnvironmentDashboard"
 
+  /agents/research:
+    get:
+      operationId: getResearchEnvironmentDashboard
+      tags: [agents]
+      summary: Get the Research AI Environment micro-dashboard
+      description: Returns the database-backed Research environment overview and its specialized solutions.
+      responses:
+        "200":
+          description: Research AI Environment dashboard
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResearchEnvironmentDashboard"
+
   /control-plane/status:
     get:
       operationId: getControlPlaneStatus
@@ -858,7 +872,7 @@ components:
         - id
         - configured
 
-    ProductionSolution:
+    EnvironmentSolution:
       type: object
       properties:
         id:
@@ -914,7 +928,34 @@ components:
         solutions:
           type: array
           items:
-            $ref: "#/components/schemas/ProductionSolution"
+            $ref: "#/components/schemas/EnvironmentSolution"
+      required:
+        - environment
+        - solutionCount
+        - readySolutions
+        - averageReadiness
+        - categories
+        - solutions
+
+    ResearchEnvironmentDashboard:
+      type: object
+      properties:
+        environment:
+          $ref: "#/components/schemas/AgentEnvironment"
+        solutionCount:
+          type: integer
+        readySolutions:
+          type: integer
+        averageReadiness:
+          type: number
+        categories:
+          type: array
+          items:
+            type: string
+        solutions:
+          type: array
+          items:
+            $ref: "#/components/schemas/EnvironmentSolution"
       required:
         - environment
         - solutionCount

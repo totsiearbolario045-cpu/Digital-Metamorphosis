@@ -5,15 +5,15 @@
  * DIGITAL METAMORPHOSIS service catalog API
  * OpenAPI spec version: 0.1.0
  */
-import type { ProductionSolutionStatus } from './productionSolutionStatus';
+import type { EnvironmentSolutionStatus } from './environmentSolutionStatus';
 
-export interface ProductionSolution {
+export interface EnvironmentSolution {
   id: string;
   slug: string;
   name: string;
   description: string;
   category: string;
-  status: ProductionSolutionStatus;
+  status: EnvironmentSolutionStatus;
   /**
      * @minimum 0
      * @maximum 100
