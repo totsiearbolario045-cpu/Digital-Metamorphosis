@@ -144,6 +144,42 @@ export interface AgentRuntimeStatus {
   capabilities: AgentCapability[];
 }
 
+export type ProductionSolutionStatus = typeof ProductionSolutionStatus[keyof typeof ProductionSolutionStatus];
+
+
+export const ProductionSolutionStatus = {
+  ready: 'ready',
+  active: 'active',
+  limited: 'limited',
+  planned: 'planned',
+} as const;
+
+export interface ProductionSolution {
+  id: string;
+  slug: string;
+  name: string;
+  description: string;
+  category: string;
+  status: ProductionSolutionStatus;
+  /**
+     * @minimum 0
+     * @maximum 100
+     */
+  readiness: number;
+  impact: string;
+  icon: string;
+  displayOrder: number;
+}
+
+export interface ProductionEnvironmentDashboard {
+  environment: AgentEnvironment;
+  solutionCount: number;
+  readySolutions: number;
+  averageReadiness: number;
+  categories: string[];
+  solutions: ProductionSolution[];
+}
+
 export type ControlPlaneWorkerStatus = typeof ControlPlaneWorkerStatus[keyof typeof ControlPlaneWorkerStatus];
 
 

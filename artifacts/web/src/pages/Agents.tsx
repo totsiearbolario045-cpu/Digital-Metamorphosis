@@ -3,6 +3,8 @@ import { StatusBadge } from "@/components/StatusBadge";
 import { Bot, Network, Workflow, Zap } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { motion } from "framer-motion";
+import { Link } from "wouter";
+import { ArrowUpRight } from "lucide-react";
 
 export default function Agents() {
   const { data: environments, isLoading } = useListAgentEnvironments();
@@ -91,6 +93,16 @@ export default function Agents() {
                       </div>
                     )}
                   </div>
+                </div>
+              )}
+              {env.slug === "production" && (
+                <div className="mt-auto border-t border-border/50 p-4">
+                  <Link href="/agents/production">
+                    <div className="flex cursor-pointer items-center justify-between rounded-sm border border-primary/30 bg-primary/5 px-4 py-3 text-xs font-mono uppercase tracking-wider text-primary transition-colors hover:bg-primary/10">
+                      Open Production micro-dashboard
+                      <ArrowUpRight className="h-4 w-4" />
+                    </div>
+                  </Link>
                 </div>
               )}
             </motion.div>

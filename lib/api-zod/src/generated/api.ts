@@ -215,6 +215,52 @@ export const GetAgentEnvironmentResponse = zod.object({
 
 
 /**
+ * Returns the database-backed Production environment overview and its specialized solutions.
+ * @summary Get the Production AI Environment micro-dashboard
+ */
+export const getProductionEnvironmentDashboardResponseSolutionsItemReadinessMin = 0;
+export const getProductionEnvironmentDashboardResponseSolutionsItemReadinessMax = 100;
+
+
+
+export const GetProductionEnvironmentDashboardResponse = zod.object({
+  "environment": zod.object({
+  "id": zod.string(),
+  "name": zod.string(),
+  "slug": zod.string(),
+  "description": zod.string().optional(),
+  "type": zod.enum(['production', 'research', 'devops', 'staging']),
+  "status": zod.enum(['active', 'inactive', 'maintenance']),
+  "agentCount": zod.number(),
+  "activeAgents": zod.number(),
+  "agents": zod.array(zod.object({
+  "id": zod.string(),
+  "name": zod.string(),
+  "model": zod.string().optional(),
+  "status": zod.string(),
+  "role": zod.string().optional()
+})).optional()
+}),
+  "solutionCount": zod.number(),
+  "readySolutions": zod.number(),
+  "averageReadiness": zod.number(),
+  "categories": zod.array(zod.string()),
+  "solutions": zod.array(zod.object({
+  "id": zod.string(),
+  "slug": zod.string(),
+  "name": zod.string(),
+  "description": zod.string(),
+  "category": zod.string(),
+  "status": zod.enum(['ready', 'active', 'limited', 'planned']),
+  "readiness": zod.number().min(getProductionEnvironmentDashboardResponseSolutionsItemReadinessMin).max(getProductionEnvironmentDashboardResponseSolutionsItemReadinessMax),
+  "impact": zod.string(),
+  "icon": zod.string(),
+  "displayOrder": zod.number()
+}))
+})
+
+
+/**
  * Returns worker, queue, and telemetry health without exposing credentials or payloads.
  * @summary Get safe control-plane operational status
  */

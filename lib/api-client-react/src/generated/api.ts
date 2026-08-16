@@ -41,6 +41,7 @@ import type {
   ListReliabilityIncidentsParams,
   ListResourcesParams,
   ListServicesParams,
+  ProductionEnvironmentDashboard,
   ReliabilityApproval,
   ReliabilityApprovalInput,
   ReliabilityEventAccepted,
@@ -840,6 +841,84 @@ export function useGetAgentEnvironment<TData = Awaited<ReturnType<typeof getAgen
  ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
 
   const queryOptions = getGetAgentEnvironmentQueryOptions(id,options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+
+
+
+
+
+
+export const getGetProductionEnvironmentDashboardUrl = () => {
+
+
+
+
+  return `/api/agents/production`
+}
+
+/**
+ * Returns the database-backed Production environment overview and its specialized solutions.
+ * @summary Get the Production AI Environment micro-dashboard
+ */
+export const getProductionEnvironmentDashboard = async ( options?: RequestInit): Promise<ProductionEnvironmentDashboard> => {
+
+  return customFetch<ProductionEnvironmentDashboard>(getGetProductionEnvironmentDashboardUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getGetProductionEnvironmentDashboardQueryKey = () => {
+    return [
+    `/api/agents/production`
+    ] as const;
+    }
+
+
+export const getGetProductionEnvironmentDashboardQueryOptions = <TData = Awaited<ReturnType<typeof getProductionEnvironmentDashboard>>, TError = ErrorType<unknown>>( options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getProductionEnvironmentDashboard>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetProductionEnvironmentDashboardQueryKey();
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getProductionEnvironmentDashboard>>> = ({ signal }) => getProductionEnvironmentDashboard({ signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getProductionEnvironmentDashboard>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type GetProductionEnvironmentDashboardQueryResult = NonNullable<Awaited<ReturnType<typeof getProductionEnvironmentDashboard>>>
+export type GetProductionEnvironmentDashboardQueryError = ErrorType<unknown>
+
+
+/**
+ * @summary Get the Production AI Environment micro-dashboard
+ */
+
+export function useGetProductionEnvironmentDashboard<TData = Awaited<ReturnType<typeof getProductionEnvironmentDashboard>>, TError = ErrorType<unknown>>(
+  options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getProductionEnvironmentDashboard>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getGetProductionEnvironmentDashboardQueryOptions(options)
 
   const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
 

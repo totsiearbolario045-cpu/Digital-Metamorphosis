@@ -233,6 +233,20 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorResponse"
 
+  /agents/production:
+    get:
+      operationId: getProductionEnvironmentDashboard
+      tags: [agents]
+      summary: Get the Production AI Environment micro-dashboard
+      description: Returns the database-backed Production environment overview and its specialized solutions.
+      responses:
+        "200":
+          description: Production AI Environment dashboard
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProductionEnvironmentDashboard"
+
   /control-plane/status:
     get:
       operationId: getControlPlaneStatus
@@ -843,6 +857,71 @@ components:
       required:
         - id
         - configured
+
+    ProductionSolution:
+      type: object
+      properties:
+        id:
+          type: string
+        slug:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        category:
+          type: string
+        status:
+          type: string
+          enum: [ready, active, limited, planned]
+        readiness:
+          type: integer
+          minimum: 0
+          maximum: 100
+        impact:
+          type: string
+        icon:
+          type: string
+        displayOrder:
+          type: integer
+      required:
+        - id
+        - slug
+        - name
+        - description
+        - category
+        - status
+        - readiness
+        - impact
+        - icon
+        - displayOrder
+
+    ProductionEnvironmentDashboard:
+      type: object
+      properties:
+        environment:
+          $ref: "#/components/schemas/AgentEnvironment"
+        solutionCount:
+          type: integer
+        readySolutions:
+          type: integer
+        averageReadiness:
+          type: number
+        categories:
+          type: array
+          items:
+            type: string
+        solutions:
+          type: array
+          items:
+            $ref: "#/components/schemas/ProductionSolution"
+      required:
+        - environment
+        - solutionCount
+        - readySolutions
+        - averageReadiness
+        - categories
+        - solutions
 
     ControlPlaneWorker:
       type: object
